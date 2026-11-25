@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>3.5초 안에 골라</title>
+<meta name="description" content="고민하면 다 티가 나요, 몇 초 멈췄는지까지 기록돼요">
+<meta property="og:title" content="3.5초 안에 골라">
+<meta property="og:description" content="고민하면 다 티가 나요">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+:root{--n:#c6ff00}
+html,body{background:#050505;color:#fff;height:100%;overflow-x:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;word-break:keep-all}
+button{font:inherit;border:0;background:none;color:inherit;cursor:pointer}
+.app{max-width:460px;margin:0 auto;min-height:100vh;padding:24px 18px 30px;display:flex;flex-direction:column;position:relative}
+.screen{display:none;flex:1;flex-direction:column}.screen.on{display:flex}
+.logo{font-size:64px;font-weight:900;line-height:.95;letter-spacing:-3px;margin-top:40px}
+.logo em{font-style:normal;color:var(--n);display:block}
+.tag{margin-top:20px;color:#999;font-size:16px;line-height:1.6}
+.go{margin-top:auto;width:100%;padding:22px;border-radius:18px;background:var(--n);color:#000;font-size:20px;font-weight:900;animation:pulse 1.4s infinite}
+@keyframes pulse{50%{transform:scale(1.03)}}
+.hud{display:flex;justify-content:space-between;align-items:center;font-weight:900}
+.hud .sc{font-size:26px;font-variant-numeric:tabular-nums}
+.hud .cb{font-size:15px;color:var(--n);opacity:0;transition:.2s}.hud .cb.on{opacity:1}
+.hud .qn{font-size:13px;color:#666}
+.stage{position:relative;margin:26px auto 0;width:280px;height:280px;display:grid;place-items:center}
+.ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--n) calc(var(--p)*1turn),#1a1a1a 0);transition:background .1s}
+.ring.h{background:conic-gradient(#ff3b30 calc(var(--p)*1turn),#1a1a1a 0)}
+.card{position:relative;width:240px;height:240px;border-radius:50%;background:#0d0d0d;display:grid;place-items:center;text-align:center;padding:30px;font-size:24px;font-weight:900;line-height:1.3;transition:transform .35s cubic-bezier(.3,1.4,.5,1),opacity .3s}
+.card.fl{transform:translateX(-140%) rotate(-30deg);opacity:0}.card.fr{transform:translateX(140%) rotate(30deg);opacity:0}
+.card.pop{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto}
+.ch{min-height:120px;border-radius:20px;background:#121212;border:2px solid #222;font-size:19px;font-weight:900;padding:14px;line-height:1.3;transition:transform .08s}
+.ch:active{transform:scale(.94)}
+.ch.pick{background:var(--n);color:#000;border-color:var(--n)}
+.ch.fade{opacity:.15}
+.pts{position:absolute;left:50%;top:44%;transform:translateX(-50%);font-size:34px;font-weight:900;color:var(--n);pointer-events:none;opacity:0}
+.pts.go2{animation:pts .8s forwards}
+@keyframes pts{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}25%{opacity:1;transform:translate(-50%,-10px) scale(1.15)}100%{opacity:0;transform:translate(-50%,-60px)}}
+.flash{position:fixed;inset:0;background:var(--n);opacity:0;pointer-events:none;z-index:9}
+.flash.on{animation:fl .25s}
+@keyframes fl{30%{opacity:.18}}
+.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.slot{height:84px;overflow:hidden;border-radius:18px;background:#0d0d0d;border:2px solid #222;margin-top:14px;display:grid;place-items:center}
+.slot b{font-size:24px;font-weight:900;text-align:center;padding:0 12px}
+.slot.done{border-color:var(--n)}
+.big{font-size:56px;font-weight:900;letter-spacing:-2px;color:var(--n);margin-top:18px;font-variant-numeric:tabular-nums}
+.hit{font-size:20px;font-weight:800;line-height:1.45;margin-top:14px}
+.hit u{text-decoration:none;color:var(--n)}
+.list p{font-size:16px;padding:11px 0;border-top:1px solid #1a1a1a;line-height:1.45}
+.list{margin-top:12px}
+.btn{width:100%;padding:18px;border-radius:16px;background:var(--n);color:#000;font-size:18px;font-weight:900;margin-top:18px}
+.sub{width:100%;padding:15px;border-radius:14px;border:1px solid #2a2a2a;font-size:15px;font-weight:700}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.nx{display:block;width:100%;text-align:left;padding:16px 0;border-top:1px solid #1a1a1a;font-size:17px;font-weight:800}
+.nx span{display:block;font-size:13px;color:#666;font-weight:600;margin-top:3px}
+.ad{margin:16px 0;min-height:1px}
+.hide{opacity:0;transform:translateY(10px);transition:.4s}.hide.show{opacity:1;transform:none}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#fff;color:#000;font-size:14px;font-weight:700;padding:12px 16px;border-radius:12px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="flash" id="flash"></div>
+<div class="app">
+<section class="screen on" id="s-start">
+  <p style="color:#666;font-weight:800;font-size:13px" id="pre">연애 직감 게임</p>
+  <h1 class="logo" id="hook">3.5초<em>안에 골라</em></h1>
+  <p class="tag" id="sub">빨리 고를수록 점수가 올라가요<br>연속으로 빨리 고르면 콤보예요<br>멈춘 시간은 결과에서 다 들켜요</p>
+  <button class="go" id="go">START</button>
+</section>
+<section class="screen" id="s-quiz">
+  <div class="hud"><span class="qn" id="qn"></span><span class="cb" id="cb"></span><span class="sc" id="sc">0</span></div>
+  <div class="stage"><div class="ring" id="ring" style="--p:1"></div><div class="card" id="card"></div></div>
+  <div class="pts" id="pts"></div>
+  <div class="choices" id="choices"></div>
+</section>
+<section class="screen" id="s-result">
+  <p style="color:#666;font-weight:800;font-size:13px">결과</p>
+  <div class="slot" id="slot"><b id="slotb">?</b></div>
+  <div class="hide" id="rest">
+    <p class="big" id="final"></p>
+    <p style="color:#777;font-size:13px">속도 점수 · 최고 콤보 <span id="mc"></span></p>
+    <p class="hit" id="hit"></p>
+    <div class="list" id="list"></div>
+    <div class="ad"></div>
+    <button class="btn" id="share">점수로 도발하기</button>
+    <div class="row"><button class="sub" id="save">이미지 저장</button><button class="sub" id="copy">링크 복사</button></div>
+    <p style="color:#666;font-size:13px;margin-top:24px">이거 한 분들이 다음에 많이 누른 것</p>
+    <div id="nexts"></div>
+    <button class="sub" id="again" style="margin-top:14px">다시 하기</button>
+  </div>
+</section>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const V="d";
+// 기록: 구글 폼(pick 방문기록) → 시트. 형식 "버전|이벤트|세션ID|유입"
+const SID=Math.random().toString(36).slice(2,9);let FR="direct";try{FR=new URLSearchParams(location.search).get("r")?"friend":(document.referrer?new URL(document.referrer).hostname:"direct")}catch(x){}
+function track(e){try{if(!location.protocol.startsWith("http"))return;const b=new URLSearchParams();b.append("entry.1016624779",[V,e,SID,FR].join("|"));fetch("https://docs.google.com/forms/d/e/1FAIpQLSf04nq87oC420sNEfEuP0wFoM3ye-Hga7sYIeD989DrfIBKuA/formResponse",{method:"POST",mode:"no-cors",body:b,keepalive:true}).catch(()=>{})}catch(x){}}
+track("view");
+const TEST={
+  id:"love-gut",
+  limit:3500,
+  share:(t)=>"나 '"+t+"' 나옴 ㅋㅋ 너는 3.5초 안에 고를 수 있냐",
+  fromFriend:(t)=>["친구는 '"+t+"' 나왔대요","해봐야 서로 맞는지 나와요"],
+  questions:[
+    {q:"썸 타는 사람한테 카톡 옴",ax:"a",o:[["바로 답장","A"],["좀 있다가","W"]]},
+    {q:"좋아하는 사람 생기면",ax:"d",o:[["친구들 다 앎","D"],["나만 앎","I"]]},
+    {q:"첫 데이트 어디 갈지",ax:"a",o:[["내가 이미 찾아둠","A"],["너 가고 싶은 데","W"]]},
+    {q:"서운한 거 생기면",ax:"d",o:[["그날 말함","D"],["그냥 넘김","I"]]},
+    {q:"사흘째 연락 없음",ax:"a",o:[["내가 먼저 함","A"],["나도 안 함","W"]]},
+    {q:"보고 싶다는 말",ax:"d",o:[["그냥 함","D"],["못 함","I"]]},
+    {q:"고백은",ax:"a",o:[["내가 함","A"],["받고 싶음","W"]]},
+    {q:"질투 날 때",ax:"d",o:[["티 냄","D"],["아무렇지 않은 척","I"]]},
+    {q:"싸운 다음 날",ax:"a",o:[["내가 먼저 연락","A"],["걔가 먼저 해야 됨","W"]]},
+    {q:"새벽 2시에 생각남",ax:"d",o:[["보냄","D"],["썼다 지움","I"]]}
+  ],
+  passive:{a:"W",d:"I"}, // 시간 초과 = 소극적인 쪽으로 계산
+  key:(c)=>(c.A>=c.W?"A":"W")+(c.D>=c.I?"D":"I"),
+  results:{
+    AD:{n:"일단 말하고 보는 쪽",l:["읽씹 당해도 '바쁜가 보다' 하고 하나 더 보내요","밀당하다 답답해서 그냥 전화해요","차여도 사흘이면 멀쩡해요"],g:"WD",b:"WI"},
+    AI:{n:"말 대신 몸이 먼저 가는 쪽",l:["'밥 먹었어?'가 사실상 고백이에요","'지나가다 샀어'를 자주 쓰는데 안 지나갔어요","상대가 눈치 없으면 혼자 서운해해요"],g:"WD",b:"AD"},
+    WD:{n:"시작만 누가 해주면 되는 쪽",l:["썸 땐 조용한데 사귀면 사람이 바뀌어요","'먼저 연락 좀 해주지' 생각만 백 번 해요","한번 정을 주면 오래 가요"],g:"AD",b:"WI"},
+    WI:{n:"혼자 시작해서 혼자 끝내는 쪽",l:["답장 한 줄을 30분 고쳐 써요","스토리는 제일 먼저 보는데 좋아요는 안 눌러요","'그때 말할걸'이 몇 개 있어요"],g:"AI",b:"AD"}
+  },
+  next:[
+    {t:"그 사람 카톡을 넣으면 나한테 관심 있는지 보여요",s:"답장 속도랑 ㅋ 개수로 봐요",u:"../kakao/?from=love"},
+    {t:"'안 고른' 답으로 보는 진짜 성격",s:"고른 것보다 이게 더 잘 맞아요",u:"../unpicked/?from=love"},
+    {t:"썸남 카톡 읽씹, 몇 초 버틸 수 있어요?",s:"답장 누르면 끝나는 게임",u:"../ignore/?from=love"},{t:"2026 연애 정산서",s:"12월 한정",u:"../receipt/?from=love"}
+  ]
+};
+const $=id=>document.getElementById(id),wait=ms=>new Promise(r=>setTimeout(r,ms));
+let i=0,ans=[],t0=0,raf=0,lock=true,score=0,combo=0,maxc=0,curKey="";
+let ac;function beep(f,d){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type="square";o.frequency.value=f;g.gain.setValueAtTime(.04,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+(d||.07));o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+(d||.07))}catch(e){}}
+function buzz(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+function setUrl(q){try{history.replaceState(null,"",location.pathname+q)}catch(e){}}
+function shareUrl(){try{if(location.protocol.startsWith("http"))return location.origin+location.pathname.replace(/[^/]*$/,"")+"?r="+curKey}catch(e){}return ""}
+function toast(m){$("toast").textContent=m;$("toast").classList.add("on");setTimeout(()=>$("toast").classList.remove("on"),1800)}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));window.scrollTo(0,0)}
+const p0=new URLSearchParams(location.search).get("r");
+if(p0&&TEST.results[p0]){$("pre").textContent="친구 결과 도착";$("hook").innerHTML="친구는<em>"+TEST.results[p0].n+"</em>";$("sub").innerHTML="해봐야 서로 맞는지 나와요<br>점수는 친구보다 높게";}
+function start(){track("start");beep(660,.1);buzz(15);i=0;ans=[];score=0;combo=0;maxc=0;$("sc").textContent="0";show("s-quiz");ask()}
+function ask(){
+  lock=false;const it=TEST.questions[i];track("q"+(i+1));
+  $("qn").textContent=(i+1)+" / 10";
+  const c=$("card");c.className="card";void c.offsetWidth;c.classList.add("pop");c.textContent=it.q;
+  $("choices").innerHTML="";it.o.forEach(([tx,v],k)=>{const b=document.createElement("button");b.className="ch";b.textContent=tx;b.onclick=()=>pick(v,b,k);$("choices").appendChild(b)});
+  t0=performance.now();$("ring").classList.remove("h");tick();
+}
+function tick(){const el=performance.now()-t0,p=Math.max(0,1-el/TEST.limit);$("ring").style.setProperty("--p",p);if(el>TEST.limit*.6)$("ring").classList.add("h");if(el>=TEST.limit)return miss();raf=requestAnimationFrame(tick)}
+function pop(t,c){const p=$("pts");p.textContent=t;p.style.color=c||"";p.classList.remove("go2");void p.offsetWidth;p.classList.add("go2")}
+function pick(v,b,k){
+  if(lock)return;lock=true;cancelAnimationFrame(raf);
+  const ms=performance.now()-t0;ans.push({v,ms,q:TEST.questions[i].q,miss:false});
+  combo=ms<1200?combo+1:0;maxc=Math.max(maxc,combo);
+  const pts=Math.round((100+Math.max(0,(TEST.limit-ms)/TEST.limit)*200)*(1+combo*.15));score+=pts;
+  $("sc").textContent=score.toLocaleString();pop("+"+pts);
+  $("cb").textContent=combo>=2?"⚡ "+combo+" COMBO":"";$("cb").classList.toggle("on",combo>=2);
+  if(combo>=2){$("flash").classList.remove("on");void $("flash").offsetWidth;$("flash").classList.add("on")}
+  beep(520+combo*60);buzz(combo>=2?[10,30,10]:10);
+  [...$("choices").children].forEach(c=>c.classList.add(c===b?"pick":"fade"));
+  $("card").classList.add(k===0?"fl":"fr");
+  setTimeout(next,320);
+}
+function miss(){
+  lock=true;const it=TEST.questions[i];ans.push({v:TEST.passive[it.ax],ms:TEST.limit,q:it.q,miss:true});
+  combo=0;$("cb").classList.remove("on");pop("TIME OUT","#ff3b30");beep(140,.25);buzz([40,40,40]);
+  document.querySelector(".app").classList.add("shake");setTimeout(()=>document.querySelector(".app").classList.remove("shake"),350);
+  setTimeout(next,500);
+}
+function next(){i++;i<TEST.questions.length?ask():finish()}
+function hitLine(slow,misses){
+  if(misses.length>=3)return "<u>"+misses.length+"문제</u> 타임아웃<br>연애에선 그게 제일 큰 답이에요";
+  if(misses.length)return "<u>'"+misses[0].q+"'</u>에서 타임아웃"+(slow&&slow.ms>1500?"<br><u>'"+slow.q+"'</u>에선 "+(slow.ms/1000).toFixed(1)+"초 멈췄고요":"");
+  if(slow&&slow.ms>1800)return "<u>'"+slow.q+"'</u>에서 "+(slow.ms/1000).toFixed(1)+"초 멈췄어요<br>거기가 제일 약한 부분이에요";
+  return "10문제 전부 1.8초 안에 골랐어요<br>고민을 안 하는 편이네요";
+}
+async function finish(){
+  track("finish");track("score:"+Math.floor(score/100)*100);
+  const c={A:0,W:0,D:0,I:0};ans.forEach(a=>c[a.v]++);curKey=TEST.key(c);setUrl("?r="+curKey);
+  const done=ans.filter(a=>!a.miss),slow=done.slice().sort((x,y)=>y.ms-x.ms)[0],misses=ans.filter(a=>a.miss),r=TEST.results[curKey];
+  show("s-result");const names=Object.values(TEST.results).map(x=>x.n);
+  for(let k=0;k<22;k++){$("slotb").textContent=names[k%names.length];beep(300+k*15,.03);await wait(50+k*k*0.9)}
+  $("slotb").textContent=r.n;$("slot").classList.add("done");beep(880,.25);buzz([20,40,80]);
+  $("final").textContent=score.toLocaleString();$("mc").textContent=maxc;$("hit").innerHTML=hitLine(slow,misses);
+  $("list").innerHTML=r.l.map(x=>"<p>"+x+"</p>").join("");
+  $("nexts").innerHTML=TEST.next.map((n,k)=>'<button class="nx" data-k="'+k+'">'+n.t+'<span>'+n.s+'</span></button>').join("");
+  document.querySelectorAll(".nx").forEach(b=>b.onclick=()=>{track("next");const n=TEST.next[b.dataset.k];if(n.u)location.href=n.u;else toast("준비 중이에요")});
+  await wait(200);$("rest").classList.add("show");document.title="나는 '"+r.n+"' | 3.5초 안에 골라";
+}
+function copy(t){try{navigator.clipboard.writeText(t).then(()=>toast("복사됐어요"),()=>toast("여기서는 복사가 막혀 있어요"))}catch(e){toast("여기서는 복사가 막혀 있어요")}}
+$("go").onclick=start;
+$("share").onclick=()=>{track("share");const url=shareUrl(),txt="나 연애 직감 게임 "+score.toLocaleString()+"점 ("+$("slotb").textContent+"). 이거 넘을 수 있냐";if(!url)return toast("공유는 사이트에서 열었을 때 돼요");try{navigator.share?navigator.share({text:txt,url}).catch(()=>{}):copy(txt+" "+url)}catch(e){toast("공유가 막혀 있어")}};
+$("copy").onclick=()=>{track("copy");const url=shareUrl();if(!url)return toast("링크는 사이트에서 열었을 때 돼요");copy(url)};
+$("save").onclick=()=>{track("save");try{const W=1080,H=1920,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");x.fillStyle="#050505";x.fillRect(0,0,W,H);x.fillStyle="#666";x.font="800 44px sans-serif";x.fillText("3.5초 안에 골라",90,300);x.fillStyle="#c6ff00";x.font="900 220px sans-serif";x.fillText(score.toLocaleString(),90,620);x.fillStyle="#fff";x.font="900 80px sans-serif";x.fillText($("slotb").textContent,90,820);x.fillStyle="#888";x.font="700 46px sans-serif";x.fillText("최고 콤보 "+maxc,90,920);x.fillStyle="#c6ff00";x.font="900 56px sans-serif";x.fillText("이 점수 넘을 수 있어?",90,1700);const a=document.createElement("a");a.download="3.5초.png";a.href=c.toDataURL("image/png");a.click();toast("저장됐어요")}catch(e){toast("여기서는 저장이 막혀 있어요")}};
+$("again").onclick=()=>{setUrl("");$("rest").classList.remove("show");$("slot").classList.remove("done");$("slotb").textContent="?";show("s-start")};
+</script>
+</body>
+</html>

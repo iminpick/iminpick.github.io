@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.5초 안에 골라</title>
+<meta property="og:title" content="3.5초 안에 골라">
+<meta property="og:description" content="고민하면 다 티가 나요, 몇 초 멈췄는지까지 기록돼요">
+<style>html,body{background:#000;margin:0}</style>
+<script>
+// 같은 사람은 계속 같은 버전을 보게 하고, 처음 온 사람은 4개 중 무작위
+(function(){
+  var V=["a","b","c","d"],v=null;
+  try{v=localStorage.getItem("love_v")}catch(e){}
+  var force=null;try{force=new URLSearchParams(location.search).get("v")}catch(e){}
+  if(force&&V.indexOf(force)>-1)v=force;
+  if(!v||V.indexOf(v)<0){v=V[Math.floor(Math.random()*V.length)];try{localStorage.setItem("love_v",v)}catch(e){}}
+  var q="";try{var r=new URLSearchParams(location.search).get("r");if(r)q="?r="+encodeURIComponent(r)}catch(e){}
+  location.replace(v+".html"+q);
+})();
+</script>
+</head>
+<body></body>
+</html>

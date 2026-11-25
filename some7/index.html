@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>썸 7일: 사귈 수 있을까</title>
+<meta name="description" content="지우랑 카톡 7일, 너무 들이대도 너무 무심해도 끝나요, 엔딩은 8개예요">
+<meta property="og:title" content="썸 7일: 사귈 수 있을까">
+<meta property="og:description" content="너무 들이대도 너무 무심해도 끝나요, 엔딩은 8개예요">
+<link rel="stylesheet" href="../assets/core.css">
+<style>
+:root{--a:#ff375f;--aon:#fff;--me:#fee500}
+body{overflow-x:hidden}
+#s-game{padding:0;margin:-28px -22px -40px;min-height:100vh}
+.hud{position:sticky;top:0;z-index:4;background:#000;padding:14px 18px 12px;border-bottom:1px solid #1d1d1d}
+.hrow{display:flex;justify-content:space-between;align-items:center}
+.who b{font-size:17px}.who span{display:block;font-size:12px;color:#777;margin-top:2px}
+.day{font-size:13px;font-weight:800;color:#aaa;text-align:right}
+.gauge{position:relative;height:10px;border-radius:6px;background:#222;margin-top:12px;overflow:visible}
+.gauge i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--a);transition:width .6s cubic-bezier(.2,.9,.3,1.2),background .4s}
+.gauge em{position:absolute;right:0;top:-22px;font-style:normal;font-size:12px;font-weight:800;color:#aaa}
+.delta{position:absolute;top:-30px;font-size:18px;font-weight:900;opacity:0;pointer-events:none}
+.delta.go{animation:up 1s forwards}
+@keyframes up{0%{opacity:0;transform:translateY(8px)}20%{opacity:1}100%{opacity:0;transform:translateY(-18px)}}
+.chat{padding:16px 18px 210px;display:flex;flex-direction:column;gap:8px}
+.time{align-self:center;font-size:12px;color:#666;background:#151515;padding:4px 10px;border-radius:10px;margin:8px 0}
+.b{max-width:78%;padding:11px 14px;font-size:16px;line-height:1.45;border-radius:18px;opacity:0;transform:translateY(8px);transition:.22s}
+.b.in{opacity:1;transform:none}
+.them{align-self:flex-start;background:#1f1f22;border-bottom-left-radius:4px}
+.me{align-self:flex-end;background:var(--me);color:#111;border-bottom-right-radius:4px;position:relative}
+.me .one{position:absolute;left:-14px;bottom:2px;font-size:11px;font-weight:800;color:var(--me);transition:opacity .4s}
+.sys{align-self:center;font-size:13px;color:#888;font-style:italic}
+.typing{align-self:flex-start;background:#1f1f22;border-radius:18px;padding:12px 14px;display:flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#888;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:460px;background:linear-gradient(transparent,#000 22%);padding:28px 18px 20px;z-index:5}
+.tbar{height:3px;background:#222;border-radius:3px;overflow:hidden;margin-bottom:10px}
+.tbar i{display:block;height:100%;background:#fff;transform-origin:left}
+.tbar.hurry i{background:#ff453a}
+.opts{display:grid;gap:8px}
+.op{width:100%;text-align:left;padding:15px 16px;border-radius:14px;background:#161616;border:1px solid #2c2c2c;font-size:16px;font-weight:700;line-height:1.35;transition:transform .1s}
+.op:active{transform:scale(.97);background:var(--me);color:#111}
+.dayover{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:10;opacity:0;pointer-events:none;transition:opacity .4s}
+.dayover.on{opacity:1}
+.dayover b{font-size:56px;font-weight:900;letter-spacing:-2px}
+.dayover span{color:#888;margin-top:8px;font-size:15px}
+.shake2{animation:shake .35s}
+#ename{font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1.25;margin-top:6px}
+.last{margin-top:18px;align-self:flex-start;background:#1f1f22;padding:12px 15px;border-radius:18px 18px 18px 4px;font-size:16px;line-height:1.45;max-width:90%}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:22px}
+.stats div{background:#111;border-radius:12px;padding:10px 6px;text-align:center;font-size:11px;color:#888}
+.stats b{display:block;font-size:22px;color:#fff;margin-bottom:2px}
+.col{margin-top:24px}
+.col p{font-size:13px;color:#888;margin-bottom:8px}
+.col ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.col li{font-size:13px;padding:9px 10px;border-radius:10px;background:#111;color:#555}
+.col li.got{color:#fff;background:#2a1018;border:1px solid #5a1a2a}
+.col li.now{border-color:var(--a);color:#fff}
+</style>
+</head>
+<body>
+<div class="app">
+<section class="screen on" id="s-start">
+  <p class="small" id="pre">카톡 연애 게임</p>
+  <h1 class="big" id="hook" style="margin-top:14px">지우랑 썸 7일<br>사귈 수 있을까요?</h1>
+  <p class="small" style="margin-top:16px">카톡이 오면 답장을 골라주세요<br>너무 들이대도, 너무 무심해도 끝나요<br>날이 갈수록 고를 시간이 줄어들어요</p>
+  <p class="small" id="colline" style="margin-top:12px;color:#ccc"></p>
+  <div style="margin-top:auto"><button class="go" id="go">1일째 시작</button></div>
+</section>
+<section class="screen" id="s-game">
+  <div class="hud">
+    <div class="hrow"><div class="who"><b>지우</b><span id="status">같은 수업 듣는 사람</span></div><div class="day" id="dayl">1일째</div></div>
+    <div class="gauge"><i id="gi"></i><em id="gv">호감도 50</em><span class="delta" id="delta"></span></div>
+  </div>
+  <div class="chat" id="chat"></div>
+  <div class="dock"><div class="tbar" id="tbar"><i id="ti"></i></div><div class="opts" id="opts"></div></div>
+</section>
+<section class="screen reveal" id="s-result">
+  <p class="small" id="rtop">엔딩</p>
+  <p id="ename"></p>
+  <p class="last" id="elast"></p>
+  <div class="list" id="elist"></div>
+  <div class="stats" id="stats"></div>
+  <div class="col" id="col"></div>
+  <div><button class="go" id="retry" style="margin-top:24px">다른 엔딩 보러 가기</button></div>
+  <div class="ad"></div>
+  <div><button class="sub" id="share">엔딩 자랑하기</button><div class="row"><button class="sub" id="save">이미지 저장</button><button class="sub" id="copy">링크 복사</button></div></div>
+  <div class="next" id="next"></div>
+  <p class="foot">지우와의 대화는 전부 지어낸 거예요<br>재미로 하는 게임이에요</p>
+</section>
+</div>
+<div class="dayover" id="dayover"><b id="dob"></b><span id="dos"></span></div>
+<script src="../assets/core.js"></script>
+<script>
+const P=PICK,$=P.$;P.init({id:"some7"});
+/* 이벤트: [일, 시간, 지우 메시지(null이면 상황 문구 sys), [[답장, 변화, 유형(G좋음/E들이댐/C무심), 지우 반응]], 시간초과시 [변화,유형,반응,내 표시]] */
+const EV=[
+ [1,"오후 8:12","오늘 같이 수업 들은 지우야 ㅎㅎ 아까 필기 보여줘서 고마웠어",[["별거 아니야 ㅋㅋ 다음에 커피 사",10,"G","ㅋㅋㅋ 콜 커피 살게"],["언제든지!! 필기 매일 보내줄까?",-6,"E","아 ㅋㅋ 괜찮아 고마워"],["ㅇㅇ",-8,"C","...아 넵"]]],
+ [1,"오후 9:40","근데 아까 이어폰으로 뭐 듣고 있었어?",[["맞혀봐 ㅋㅋ 힌트 줌",10,"G","오 뭔데 궁금하게"],["내 플리 통째로 보내줄게!! 최애 30곡",-5,"E","오… 많다 ㅋㅋ 천천히 들어볼게"],["그냥 아무거나",-7,"C","아 그렇구나"]]],
+ [1,"밤 11:58","잘 자 ㅎㅎ",[["너도 잘 자 내일 보자",8,"G","ㅎㅎ 응"],["벌써 자? 더 얘기하자 ㅠ",-8,"E","ㅋㅋ 나 내일 1교시야"]],[-4,"C","","(읽음)"]],
+ [2,"오전 10:03","1교시 지각함 ㅠㅠ",[["ㅋㅋㅋㅋ 교수님 표정 어땠어",9,"G","완전 째려봄 ㅋㅋㅋ"],["괜찮아?? 내일부터 내가 깨워줄까?",-7,"E","ㅋㅋ 아냐아냐 괜찮아"],["ㅠ",-5,"C","…ㅋㅋ"]]],
+ [2,"오후 3:20","(사진) 학식 이거 실화냐",[["학교가 우리 다이어트 시키는 중임",10,"G","ㅋㅋㅋㅋㅋ 인정"],["같이 밖에서 먹을래? 지금 갈게",-6,"E","아 나 벌써 먹었어 ㅋㅋ"],["ㅋ",-6,"C","…"]]],
+ [2,"밤 10:15","너는 주말에 뭐 해?",[["딱히? 너는?",8,"G","나도 딱히 ㅎㅎ"],["너 시간 되면 다 비워둘게!",-6,"E","어… 아직 몰라 ㅋㅋ"],["바빠",-10,"C","아 그렇구나 ㅎㅎ"]]],
+ [3,"오후 6:30","나 오늘 좀 힘들었어",[["무슨 일 있었어? 얘기해봐",12,"G","그냥 과제 때문에… 들어줘서 고마워"],["헐 지금 너네 집 앞으로 갈까??",-8,"E","아 아니 그 정도는 아니야 ㅋㅋ"],["힘내",-8,"C","응…"]],[-10,"C","…아냐 그냥 해본 말이야","(읽음)"]],
+ [3,"밤 9:00","아 맞다 그 영화 봤어?",[["아직! 볼까 고민 중",8,"G","같이 볼래? ㅎㅎ"],["아니!! 같이 보자 내일? 모레? 언제 돼?",-6,"E","어 ㅋㅋ 일단 시간 보고"],["안 봄",-6,"C","아 ㅎㅎ"]]],
+ [3,"새벽 2:17","자?",[["(아침에) 미안 자고 있었어 ㅋㅋ 왜?",10,"G","ㅋㅋ 그냥 잠이 안 와서"],["안 자! 나도 너 생각하고 있었어",-10,"E","아… ㅋㅋ 그렇구나"],["(못 본 척 계속 두기)",-6,"C",""]],[10,"G","ㅋㅋ 자는구나","(아침에 답장함)"]],
+ [4,"오후 1:10","그 영화 토요일에 볼래?",[["좋아 토요일 몇 시?",10,"G","3시 어때?"],["좋아!!! 끝나고 저녁도 먹고 카페도 가자",-5,"E","ㅋㅋ 일단 영화부터!"],["토요일은 좀…",-10,"C","아 그래? 그럼 다음에"]]],
+ [4,"오후 7:45","팝콘 단짠 vs 카라멜",[["단짠 아니면 안 감",9,"G","ㅋㅋㅋ 오 통했다"],["너 좋아하는 걸로!",-4,"E","아니 그런 거 말고 니 취향 ㅋㅋ"],["아무거나",-7,"C","…ㅎㅎ"]]],
+ [4,"밤 11:30","내일 늦잠 자면 깨워줘 ㅋㅋ",[["모닝콜 유료임",10,"G","얼만데 ㅋㅋㅋ"],["몇 시? 30분마다 전화할게",-7,"E","ㅋㅋ 한 번이면 돼"],["알람 맞춰",-8,"C","ㅋㅋ 냉정하네"]]],
+ [5,"오후 2:50","나 조금 늦을 듯 ㅠ 10분!",[["천천히 와 표 먼저 뽑아둘게",10,"G","천사네 ㅠ"],["괜찮아!! 1시간 늦어도 기다릴게",-5,"E","ㅋㅋ 10분이야"],["빨리 와",-8,"C","미안…"]]],
+ [5,"오후 7:20","오늘 재밌었다 ㅎㅎ",[["나도 ㅎㅎ 결말 아직도 생각남",11,"G","그치 그 장면 대박"],["오늘 내 인생 최고의 날이었어",-8,"E","아 ㅋㅋㅋ 그 정도야?"],["ㅇㅇ",-9,"C","…"]]],
+ [5,"밤 12:40","근데 너는 원래 이렇게 잘 챙겨?",[["너한테만 그런 걸로 해둘게",10,"G","…뭐야 ㅋㅋㅋ"],["사실 너 좋아해서 그래",-4,"E","어…? 갑자기? ㅋㅋ"],["응 원래 다 잘 챙겨",-6,"C","아… 그렇구나 ㅎㅎ"]]],
+ [6,"오후 4:00","친구가 너 소개해달래 ㅋㅋ",[["나 지금 관심 있는 사람 있어서 ㅎㅎ",12,"G","오 누군데 ㅋㅋ"],["싫어 난 너만 볼 거야",-6,"E","ㅋㅋㅋ 알았어 알았어"],["누군데? 사진 있어?",-12,"C","…아 몰라 ㅋㅋ"]]],
+ [6,"밤 10:10",null,[["(그냥 기다리기)",8,"G","아 미안 폰 꺼졌었어!!"],["뭐해? 왜 답장 없어? 화났어?",-10,"E","아 폰 꺼졌었어 ㅋㅋ 놀랐네"],["(나도 연락 안 하기)",-4,"C","…자?"]],[8,"G","아 미안 폰 꺼졌었어!!","(기다림)"],"지우 답장이 3시간째 없어요"],
+ [6,"새벽 1:30","내일 할 말 있는데 ㅎㅎ",[["뭔데 ㅋㅋ 궁금하게",6,"G","내일 말할게 ㅋㅋ"],["혹시 나 싫어졌어?? 지금 말해줘",-10,"E","아니 그런 거 아니야 ㅋㅋ"],["ㅇㅋ",-6,"C","ㅎㅎ…"]]],
+ [7,"오후 6:00","오늘 시간 돼?",[["돼 어디서 볼까",8,"G","학교 앞 카페 7시!"],["당연하지!! 지금 바로 나갈게",-3,"E","ㅋㅋ 7시에 보자"],["좀 바쁜데",-10,"C","아… 그럼 잠깐만이라도"]]],
+ [7,"저녁 7:30",null,[["내가 먼저 말할게, 나 너 좋아해",0,"CONF",""],["(지우가 말할 때까지 기다리기)",0,"WAIT",""]],[0,"WAIT","","(기다림)"],"카페, 지우가 컵만 만지작거려요"]
+];
+const END={
+ couple:["사귐","나도 좋아해 사실 아까부터 그 말 기다렸어",["7일 동안 선을 넘지 않았어요","그래서 고백이 부담이 아니라 반가웠던 거예요","이 엔딩까지 온 사람은 많지 않아요"]],
+ herconf:["지우가 먼저 고백함","나 너 좋아해 내가 먼저 말하고 싶었어",["기다린 게 정답이었어요","지우가 확신할 때까지 편하게 해줬잖아요","말 안 해도 다 전해지는 사이예요"]],
+ friend:["고백했는데 친구로 남음","고마워… 근데 우리 지금처럼 지내면 안 될까?",["좋은 사람인 건 확실히 전해졌어요","타이밍이 조금 빨랐어요","친구로 지내다 보면 다시 기회가 올 수도 있어요"]],
+ limbo:["애매하게 계속 썸","오늘 재밌었다 ㅎㅎ 또 보자!",["아무도 먼저 말을 안 했어요","썸은 계속되는데 진전이 없어요","다음 주에도 똑같은 카톡을 하고 있을 거예요"]],
+ rejected:["고백했다가 차임","미안… 나는 그런 마음은 아니었어",["7일 동안 마음이 엇갈렸어요","고백보다 그 전 카톡들이 문제였을지도 몰라요","다시 해보면 어디서 틀렸는지 보여요"]],
+ drift:["자연스럽게 멀어짐","(지우가 먼저 '들어갈게' 하고 일어났어요)",["아무 일도 없었는데 끝났어요","제일 흔하고 제일 아쉬운 엔딩이에요","관심은 표현해야 전해져요"]],
+ tooeager:["부담스러워서 끝난 썸","너 좋은 사람인데… 나 좀 천천히 가고 싶어",["좋아하는 마음이 너무 빨리 다 보였어요","상대가 다가올 틈이 없었어요","밀당까진 아니어도 한 박자 쉬어보세요"]],
+ cold:["관심 식어서 끝난 썸","(지우가 더 이상 먼저 연락하지 않아요)",["답장이 짧고 늦었어요","관심 없는 줄 알고 지우가 먼저 정리했어요","마음이 있었다면 아까운 엔딩이에요"]]
+};
+const ORDER=["couple","herconf","friend","limbo","rejected","drift","tooeager","cold"];
+let k=0,g=50,raf=0,t0=0,lim=6000,lock=true,st={G:0,E:0,C:0,miss:0,fast:0},got=[];
+try{got=JSON.parse(localStorage.getItem("some7_end")||"[]")}catch(e){}
+const fe=P.param("e");
+if(fe&&END[fe]){$("pre").textContent="친구 엔딩 도착";$("hook").innerHTML="친구는 '"+END[fe][0]+"' 엔딩을 봤대요<br>당신은 사귈 수 있을까요?";$("go").textContent="도전하기"}
+if(got.length)$("colline").textContent="모은 엔딩 "+got.length+"/8";
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function bub(cls,txt){const d=document.createElement("div");d.className="b "+cls;d.textContent=txt;$("chat").appendChild(d);requestAnimationFrame(()=>d.classList.add("in"));window.scrollTo(0,document.body.scrollHeight);return d}
+function note(cls,txt){const d=document.createElement("div");d.className=cls;d.textContent=txt;$("chat").appendChild(d);window.scrollTo(0,document.body.scrollHeight);return d}
+function setG(nv,dx){
+  g=Math.max(0,Math.min(100,nv));$("gi").style.width=g+"%";$("gv").textContent="호감도 "+g;
+  $("gi").style.background=g>=70?"#ff375f":g>=40?"#ff9f0a":"#8e8e93";
+  if(dx){const d=$("delta");d.textContent=(dx>0?"+":"")+dx;d.style.color=dx>0?"#ff375f":"#8e8e93";d.style.left=Math.max(0,Math.min(90,g))+"%";d.classList.remove("go");void d.offsetWidth;d.classList.add("go")}
+  $("status").textContent=g>=75?"요즘 자주 웃는 사람":g>=50?"같은 수업 듣는 사람":g>=25?"조금 멀어진 사람":"답장이 짧아진 사람";
+}
+async function dayCard(d){$("dob").textContent=d+"일째";$("dos").textContent=["","처음 연락한 날","조금 편해진 날","새벽 카톡","약속 잡는 날","영화 보는 날","흔들리는 날","마지막 날"][d];$("dayover").classList.add("on");await wait(1100);$("dayover").classList.remove("on");await wait(300)}
+async function start(){
+  P.track("start");k=0;st={G:0,E:0,C:0,miss:0,fast:0};$("chat").innerHTML="";setG(50,0);P.show("s-game");run();
+}
+async function run(){
+  if(k>=EV.length)return finish();
+  const [d,time,msg,opts,to,sys]=EV[k];
+  if(k===0||EV[k-1][0]!==d){await dayCard(d);$("dayl").textContent=d+"일째";P.track("day"+d)}
+  note("time",time);
+  if(msg){const ty=note("typing","");ty.innerHTML="<i></i><i></i><i></i>";await wait(500+Math.min(900,msg.length*25));ty.remove();bub("them",msg);P.buzz(14)}
+  else{await wait(400);note("sys",sys)}
+  lim=Math.max(3200,6800-d*500);
+  const sh=opts.slice().sort(()=>Math.random()-.5);
+  $("opts").innerHTML="";sh.forEach(o=>{const b=document.createElement("button");b.className="op";b.textContent=o[0];b.onclick=()=>answer(o,false);$("opts").appendChild(b)});
+  lock=false;t0=performance.now();$("tbar").classList.remove("hurry");tick();
+}
+function tick(){const el=performance.now()-t0;$("ti").style.transform="scaleX("+Math.max(0,1-el/lim)+")";if(el>lim*.6)$("tbar").classList.add("hurry");if(el>=lim){const e=EV[k],to=e[4]||[-5,"C","","(읽음)"];return answer([to[3],to[0],to[1],to[2]],true)}raf=requestAnimationFrame(tick)}
+async function answer(o,timeout){
+  if(lock)return;lock=true;cancelAnimationFrame(raf);$("opts").innerHTML="";
+  const ms=performance.now()-t0;if(!timeout&&ms<1500)st.fast++;if(timeout)st.miss++;
+  const [txt,dx,ty,react]=o;
+  if(ty==="CONF"||ty==="WAIT"){if(txt)bub("me",txt);P.track(ty==="CONF"?"confess":"wait");await wait(900);return finish(ty)}
+  if(txt&&!txt.startsWith("(")){const m=bub("me",txt);const one=document.createElement("span");one.className="one";one.textContent="1";m.appendChild(one);setTimeout(()=>one.style.opacity=0,700)}
+  else if(txt)note("sys",txt);
+  st[ty]=(st[ty]||0)+1;P.buzz(dx>0?10:[30,40,30]);
+  await wait(700);setG(g+dx,dx);if(dx<0){$("chat").classList.add("shake2");setTimeout(()=>$("chat").classList.remove("shake2"),350)}
+  if(react){const tyd=note("typing","");tyd.innerHTML="<i></i><i></i><i></i>";await wait(700);tyd.remove();bub("them",react)}
+  await wait(650);
+  if(g<=0)return finish("FAIL");
+  k++;run();
+}
+function finish(kind){
+  let e;
+  if(kind==="FAIL")e=st.E>=st.C?"tooeager":"cold";
+  else if(kind==="CONF")e=g>=75?"couple":g>=45?"friend":"rejected";
+  else e=g>=75?"herconf":g>=45?"limbo":"drift";
+  P.track("finish");P.track("end:"+e);
+  const isNew=!got.includes(e);if(isNew){got.push(e);try{localStorage.setItem("some7_end",JSON.stringify(got))}catch(x){}}
+  const E=END[e];
+  $("rtop").textContent=(isNew?"새 엔딩 · ":"엔딩 · ")+got.length+"/8 모음";
+  $("ename").textContent=E[0];$("elast").textContent="지우: "+E[1];
+  $("elist").innerHTML=E[2].map(x=>"<p>"+x+"</p>").join("");
+  $("stats").innerHTML='<div><b>'+g+'</b>호감도</div><div><b>'+st.fast+'</b>즉답</div><div><b>'+(st.E||0)+'</b>들이댐</div><div><b>'+((st.C||0))+'</b>무심</div>';
+  $("col").innerHTML='<p>엔딩 수집 '+got.length+'/8</p><ul>'+ORDER.map(x=>'<li class="'+(got.includes(x)?"got":"")+(x===e?" now":"")+'">'+(got.includes(x)?END[x][0]:"???")+'</li>').join("")+'</ul>';
+  $("s-result").dataset.e=e;P.setUrl("?e="+e);
+  P.show("s-result");P.renderNext($("next"));
+  [...$("s-result").children].forEach((el,j)=>{el.classList.remove("show");setTimeout(()=>el.classList.add("show"),j*180)});
+}
+$("go").onclick=start;$("retry").onclick=()=>{P.track("retry");start()};
+$("share").onclick=()=>{const e=$("s-result").dataset.e;P.share("나 썸 7일에서 '"+END[e][0]+"' 엔딩 봄 ㅋㅋ (엔딩 "+got.length+"/8) 너는 사귈 수 있냐","?e="+e)};
+$("copy").onclick=()=>P.copyLink("?e="+$("s-result").dataset.e);
+$("save").onclick=()=>{const e=$("s-result").dataset.e;P.saveImage([{t:"썸 7일",size:46,weight:700,color:"#888"},{t:"엔딩",size:50,weight:700,color:"#ff375f",gap:60},{t:END[e][0],size:96,gap:10},{t:"지우: "+END[e][1],size:46,weight:500,color:"#ccc",gap:50},{t:"엔딩 "+got.length+"/8 모음",size:44,weight:700,color:"#888",gap:60},{t:"너는 사귈 수 있어?",size:52,weight:800,color:"#ff375f",gap:60}],"some7")};
+</script>
+</body>
+</html>

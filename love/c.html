@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>3.5초 안에 골라</title>
+<meta name="description" content="고민하면 다 티가 나요, 몇 초 멈췄는지까지 기록돼요">
+<meta property="og:title" content="3.5초 안에 골라">
+<meta property="og:description" content="고민하면 다 티가 나요">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#0b0b0d;color:#fff;min-height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;word-break:keep-all}
+button{font:inherit;border:0;background:none;color:inherit;cursor:pointer}
+.wrap{max-width:460px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.hd{position:sticky;top:0;z-index:3;background:#0b0b0d;padding:16px 18px 12px;border-bottom:1px solid #1c1c1e;display:flex;align-items:center;gap:12px}
+.av{width:40px;height:40px;border-radius:14px;background:#2c2c2e;display:grid;place-items:center;font-weight:900;color:#aaa}
+.hd b{font-size:16px}.hd span{display:block;font-size:12px;color:#777;margin-top:2px}
+.chat{flex:1;padding:16px 16px 200px;display:flex;flex-direction:column;gap:8px}
+.time{align-self:center;font-size:12px;color:#666;margin:6px 0}
+.b{max-width:80%;padding:11px 14px;font-size:16px;line-height:1.45;border-radius:18px;opacity:0;transform:translateY(8px);transition:.2s}
+.b.in{opacity:1;transform:none}
+.them{align-self:flex-start;background:#1f1f22;border-bottom-left-radius:4px}
+.me{align-self:flex-end;background:#fee500;color:#111;border-bottom-right-radius:4px;position:relative}
+.me .one{position:absolute;left:-14px;bottom:2px;font-size:11px;font-weight:800;color:#fee500;transition:opacity .4s}
+.me.miss{background:#2c2c2e;color:#888;font-style:italic}
+.big{font-size:19px;font-weight:800}
+.typing{align-self:flex-start;background:#1f1f22;border-radius:18px;padding:12px 14px;display:flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#888;animation:bl 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bl{50%{opacity:.2}}
+.dock{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;padding:26px 16px 20px;background:linear-gradient(transparent,#0b0b0d 25%);z-index:4}
+.tb{height:3px;background:#222;border-radius:3px;overflow:hidden;margin-bottom:10px}
+.tb i{display:block;height:100%;background:#fee500;transform-origin:left}.tb.h i{background:#ff453a}
+.ch{width:100%;text-align:left;padding:16px;border-radius:14px;background:#161618;border:1px solid #2c2c2e;font-size:17px;font-weight:700;margin-top:8px}
+.ch:active,.ch.pick{background:#fee500;color:#111}
+.ch.fade{opacity:.2}
+.res{padding:4px 0}
+.btn{width:100%;padding:17px;border-radius:14px;background:#fee500;color:#111;font-size:17px;font-weight:800;margin-top:8px}
+.sub{width:100%;padding:15px;border-radius:14px;border:1px solid #2c2c2e;font-size:15px;font-weight:700}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.nx{display:block;width:100%;text-align:left;padding:16px 0;border-top:1px solid #1c1c1e;font-size:17px;font-weight:800;line-height:1.4}
+.nx span{display:block;font-size:13px;color:#666;font-weight:600;margin-top:3px}
+.ad{margin:16px 0;min-height:1px}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#fff;color:#000;font-size:14px;font-weight:700;padding:12px 16px;border-radius:12px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+.screen{display:none}.screen.on{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hd"><div class="av">친</div><div><b>제일 친한 친구</b><span id="st">지금 활동 중</span></div></div>
+  <div class="chat" id="chat"></div>
+</div>
+<div class="dock" id="dock"><div class="tb" id="tb" style="visibility:hidden"><i id="ti"></i></div><div id="choices"></div></div>
+<div class="toast" id="toast"></div>
+<!-- 테스트 스크립트 호환용 화면 표시 -->
+<div class="screen on" id="s-start"></div><div class="screen" id="s-quiz"></div><div class="screen" id="s-result"></div>
+<script>
+const V="c";
+// 기록: 구글 폼(pick 방문기록) → 시트. 형식 "버전|이벤트|세션ID|유입"
+const SID=Math.random().toString(36).slice(2,9);let FR="direct";try{FR=new URLSearchParams(location.search).get("r")?"friend":(document.referrer?new URL(document.referrer).hostname:"direct")}catch(x){}
+function track(e){try{if(!location.protocol.startsWith("http"))return;const b=new URLSearchParams();b.append("entry.1016624779",[V,e,SID,FR].join("|"));fetch("https://docs.google.com/forms/d/e/1FAIpQLSf04nq87oC420sNEfEuP0wFoM3ye-Hga7sYIeD989DrfIBKuA/formResponse",{method:"POST",mode:"no-cors",body:b,keepalive:true}).catch(()=>{})}catch(x){}}
+track("view");
+const TEST={
+  id:"love-gut",
+  limit:3500,
+  share:(t)=>"나 '"+t+"' 나옴 ㅋㅋ 너는 3.5초 안에 고를 수 있냐",
+  fromFriend:(t)=>["친구는 '"+t+"' 나왔대","너도 해봐야 맞는지 나옴"],
+  questions:[
+    {q:"썸 타는 사람한테 카톡 옴",ax:"a",o:[["바로 답장","A"],["좀 있다가","W"]]},
+    {q:"좋아하는 사람 생기면",ax:"d",o:[["친구들 다 앎","D"],["나만 앎","I"]]},
+    {q:"첫 데이트 어디 갈지",ax:"a",o:[["내가 이미 찾아둠","A"],["너 가고 싶은 데","W"]]},
+    {q:"서운한 거 생기면",ax:"d",o:[["그날 말함","D"],["그냥 넘김","I"]]},
+    {q:"사흘째 연락 없음",ax:"a",o:[["내가 먼저 함","A"],["나도 안 함","W"]]},
+    {q:"보고 싶다는 말",ax:"d",o:[["그냥 함","D"],["못 함","I"]]},
+    {q:"고백은",ax:"a",o:[["내가 함","A"],["받고 싶음","W"]]},
+    {q:"질투 날 때",ax:"d",o:[["티 냄","D"],["아무렇지 않은 척","I"]]},
+    {q:"싸운 다음 날",ax:"a",o:[["내가 먼저 연락","A"],["걔가 먼저 해야 됨","W"]]},
+    {q:"새벽 2시에 생각남",ax:"d",o:[["보냄","D"],["썼다 지움","I"]]}
+  ],
+  passive:{a:"W",d:"I"}, // 시간 초과 = 소극적인 쪽으로 계산
+  key:(c)=>(c.A>=c.W?"A":"W")+(c.D>=c.I?"D":"I"),
+  results:{
+    AD:{n:"일단 말하고 보는 쪽",l:["읽씹 당해도 '바쁜가 보다' 하고 하나 더 보냄","밀당하다 답답해서 그냥 전화함","차여도 사흘이면 멀쩡함"],g:"WD",b:"WI"},
+    AI:{n:"말 대신 몸이 먼저 가는 쪽",l:["'밥 먹었어?'가 너한텐 고백임","'지나가다 샀어' 자주 씀 근데 안 지나감","상대가 눈치 없으면 혼자 서운해함"],g:"WD",b:"AD"},
+    WD:{n:"시작만 누가 해주면 되는 쪽",l:["썸 땐 조용한데 사귀면 사람 바뀜","'먼저 연락 좀 해주지' 생각만 백 번 함","한번 정 주면 오래 감"],g:"AD",b:"WI"},
+    WI:{n:"혼자 시작해서 혼자 끝내는 쪽",l:["답장 한 줄 30분 고쳐 씀","스토리는 제일 먼저 봄 좋아요는 안 누름","'그때 말할걸'이 몇 개 있음"],g:"AI",b:"AD"}
+  },
+  next:[
+    {t:"그 사람 카톡을 넣으면 나한테 관심 있는지 보여요",s:"답장 속도랑 ㅋ 개수로 봐요",u:"../kakao/?from=love"},
+    {t:"'안 고른' 답으로 보는 진짜 성격",s:"고른 것보다 이게 더 잘 맞아요",u:"../unpicked/?from=love"},
+    {t:"썸남 카톡 읽씹, 몇 초 버틸 수 있어요?",s:"답장 누르면 끝나는 게임",u:"../ignore/?from=love"},{t:"2026 연애 정산서",s:"12월 한정",u:"../receipt/?from=love"}
+  ]
+};
+// 친구 말투로 바꾼 질문 (판정 데이터는 TEST와 동일)
+const CQ=["썸 타는 사람한테 카톡 오면 바로 답장해?","좋아하는 사람 생기면 티 내?","첫 데이트 장소는 누가 정해?","서운한 거 생기면 말해?","걔가 사흘째 연락 없으면?","보고 싶다는 말 잘 해?","고백은 니가 해? 받아?","질투 나면 티 내?","싸운 다음 날엔 어떻게 해?","새벽 2시에 그 사람 생각나면?"];
+const $=id=>document.getElementById(id),wait=ms=>new Promise(r=>setTimeout(r,ms));
+let i=0,ans=[],t0=0,raf=0,lock=true,curKey="";
+function setUrl(q){try{history.replaceState(null,"",location.pathname+q)}catch(e){}}
+function shareUrl(){try{if(location.protocol.startsWith("http"))return location.origin+location.pathname.replace(/[^/]*$/,"")+"?r="+curKey}catch(e){}return ""}
+function toast(m){$("toast").textContent=m;$("toast").classList.add("on");setTimeout(()=>$("toast").classList.remove("on"),1800)}
+function buzz(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+function scr(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id))}
+function bub(cls,html){const d=document.createElement("div");d.className="b "+cls;d.innerHTML=html;$("chat").appendChild(d);requestAnimationFrame(()=>d.classList.add("in"));window.scrollTo(0,document.body.scrollHeight);return d}
+async function say(html,ms){$("st").textContent="입력 중…";const t=document.createElement("div");t.className="typing";t.innerHTML="<i></i><i></i><i></i>";$("chat").appendChild(t);window.scrollTo(0,document.body.scrollHeight);await wait(ms||650);t.remove();$("st").textContent="지금 활동 중";buzz(12);return bub("them",html)}
+function opts(list){$("choices").innerHTML="";list.forEach(([tx,fn])=>{const b=document.createElement("button");b.className="ch";b.textContent=tx;b.onclick=()=>fn(b);$("choices").appendChild(b)})}
+async function intro(){
+  const p=new URLSearchParams(location.search).get("r");
+  const d=new Date();$("chat").innerHTML='<p class="time">오늘 '+(d.getHours()<12?"오전 ":"오후 ")+((d.getHours()%12)||12)+":"+String(d.getMinutes()).padStart(2,"0")+'</p>';
+  if(p&&TEST.results[p]){await say("야 이거 해봐 ㅋㅋ");await say("나 이거 했는데 <b>'"+TEST.results[p].n+"'</b> 나옴");await say("너도 해야 우리 맞는지 나옴")}
+  else{await say("야 나 질문 10개만 할게");await say("고민하지 말고 바로 답해 <b>3.5초</b> 넘으면 못 고른 걸로 침 ㅋㅋ");await say("몇 초 멈췄는지 다 보임")}
+  opts([["ㅇㅋ 해봐",b=>{track("start");b.classList.add("pick");scr("s-quiz");setTimeout(()=>{bub("me","ㅇㅋ 해봐");ask()},200)}]]);
+}
+async function ask(){
+  $("choices").innerHTML="";track("q"+(i+1));
+  await say(CQ[i],450+Math.random()*300);
+  const it=TEST.questions[i];
+  opts(it.o.map(([tx,v])=>[tx,b=>pick(v,tx,b)]));
+  $("tb").style.visibility="visible";$("tb").classList.remove("h");lock=false;t0=performance.now();tick();
+}
+function tick(){const el=performance.now()-t0;$("ti").style.transform="scaleX("+Math.max(0,1-el/TEST.limit)+")";if(el>TEST.limit*.6)$("tb").classList.add("h");if(el>=TEST.limit)return miss();raf=requestAnimationFrame(tick)}
+function pick(v,tx,b){
+  if(lock)return;lock=true;cancelAnimationFrame(raf);
+  ans.push({v,ms:performance.now()-t0,q:TEST.questions[i].q,miss:false});buzz(10);
+  [...$("choices").children].forEach(c=>c.classList.add(c===b?"pick":"fade"));
+  setTimeout(()=>{$("choices").innerHTML="";$("tb").style.visibility="hidden";const m=bub("me",tx);const one=document.createElement("span");one.className="one";one.textContent="1";m.appendChild(one);setTimeout(()=>one.style.opacity=0,500);next()},160);
+}
+function miss(){
+  lock=true;const it=TEST.questions[i];ans.push({v:TEST.passive[it.ax],ms:TEST.limit,q:it.q,miss:true});buzz([25,40,25]);
+  $("choices").innerHTML="";$("tb").style.visibility="hidden";bub("me miss","(대답 못 함)");setTimeout(()=>say(["?? ㅋㅋ 왜 대답을 못 해","읽씹이네 ㅋㅋ 알겠어","ㅋㅋ 고민 중이구나"][Math.floor(Math.random()*3)],400).then(next),200);
+}
+async function next(){await wait(350);i++;if(i<TEST.questions.length)ask();else finish()}
+function hitLine(slow,misses){
+  if(misses.length>=3)return "10개 중에 <b>"+misses.length+"개</b>를 대답 못 했어 ㅋㅋ 연애에선 그게 제일 큰 답이야";
+  if(misses.length)return "<b>'"+misses[0].q+"'</b>에서 아무 말도 못 하더라"+(slow&&slow.ms>1500?"<br>그리고 <b>'"+slow.q+"'</b>에선 "+(slow.ms/1000).toFixed(1)+"초 멈췄고":"");
+  if(slow&&slow.ms>1800)return "너 <b>'"+slow.q+"'</b>에서 "+(slow.ms/1000).toFixed(1)+"초 멈췄어<br>거기가 너 제일 약한 데야";
+  return "10개 다 1.8초 안에 답했네<br>고민 같은 거 별로 안 하는구나";
+}
+async function finish(){
+  track("finish");
+  const c={A:0,W:0,D:0,I:0};ans.forEach(a=>c[a.v]++);curKey=TEST.key(c);setUrl("?r="+curKey);
+  const done=ans.filter(a=>!a.miss),slow=done.slice().sort((x,y)=>y.ms-x.ms)[0],misses=ans.filter(a=>a.miss),r=TEST.results[curKey];
+  await say("잠만 정리해볼게",500);await wait(900);
+  await say(hitLine(slow,misses),900);
+  await say("그래서 너는 <span class='big'>"+r.n+"</span>",900);
+  for(const l of r.l)await say(l,600);
+  await say("너랑 잘 맞는 사람은 <b>"+TEST.results[r.g].n+"</b>",700);
+  scr("s-result");document.title="나는 '"+r.n+"' | 3.5초 안에 골라";
+  const res=document.createElement("div");res.className="res";
+  res.innerHTML='<div class="ad"></div><button class="btn" id="share">이거 그 사람한테 보내기</button><div class="row"><button class="sub" id="save">대화 캡처 저장</button><button class="sub" id="copy">링크 복사</button></div><div style="margin-top:22px;color:#777;font-size:13px">이거 한 분들이 다음에 많이 누른 것</div>'+TEST.next.map((n,k)=>'<button class="nx" data-k="'+k+'">'+n.t+'<span>'+n.s+'</span></button>').join("")+'<button class="sub" id="again" style="margin-top:14px">다시 하기</button>';
+  $("chat").appendChild(res);$("dock").style.display="none";window.scrollTo(0,document.body.scrollHeight);
+  $("share").onclick=()=>{track("share");const url=shareUrl(),txt=TEST.share(r.n);if(!url)return toast("공유는 사이트에서 열었을 때 돼요");try{navigator.share?navigator.share({text:txt,url}).catch(()=>{}):copy(txt+" "+url)}catch(e){toast("여기서는 공유가 막혀 있어요")}};
+  $("copy").onclick=()=>{track("copy");const url=shareUrl();if(!url)return toast("링크는 사이트에서 열었을 때 돼요");copy(url)};
+  $("save").onclick=()=>{track("save");saveImg(slow,misses,r)};
+  document.querySelectorAll(".nx").forEach(b=>b.onclick=()=>{track("next");const n=TEST.next[b.dataset.k];if(n.u)location.href=n.u;else toast("준비 중이에요")});
+  $("again").onclick=()=>{location.href=location.pathname};
+}
+function copy(t){try{navigator.clipboard.writeText(t).then(()=>toast("복사됐어요"),()=>toast("여기서는 복사가 막혀 있어요"))}catch(e){toast("여기서는 복사가 막혀 있어요")}}
+function saveImg(slow,misses,r){
+  try{const W=1080,H=1920,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");x.fillStyle="#0b0b0d";x.fillRect(0,0,W,H);
+    let y=220;x.fillStyle="#777";x.font="700 40px sans-serif";x.fillText("제일 친한 친구",80,y);y+=80;
+    const lines=[hitLine(slow,misses).replace(/<[^>]+>/g," ").replace(/\s+/g," "),"그래서 너는 "+r.n,r.l[0],r.l[1]];
+    x.font="500 46px sans-serif";
+    lines.forEach(l=>{const parts=[];let s="";for(const ch of l){if(x.measureText(s+ch).width>760){parts.push(s);s=ch}else s+=ch}parts.push(s);const h=parts.length*62+44;x.fillStyle="#1f1f22";rr(x,80,y,840,h,34);x.fill();x.fillStyle="#fff";parts.forEach((p,k)=>x.fillText(p,112,y+64+k*62));y+=h+26});
+    x.fillStyle="#fee500";x.font="800 50px sans-serif";x.fillText("너는 몇 초 멈출 것 같아?",80,1760);
+    const a=document.createElement("a");a.download="3.5초.png";a.href=c.toDataURL("image/png");a.click();toast("저장됐어요");
+  }catch(e){toast("여기서는 저장이 막혀 있어요")}
+}
+function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
+intro();
+</script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>3.5초 연애 직감 테스트</title>
+<meta name="description" content="고민하면 져요, 3.5초 안에 골라주세요">
+<meta property="og:title" content="3.5초 연애 직감 테스트">
+<meta property="og:description" content="고민하면 져요, 망설인 시간까지 다 기록돼요">
+<style>
+:root{--bg:#120b1f;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.12);--pink:#ff4f8b;--violet:#8b5cff;--txt:#fff;--sub:rgba(255,255,255,.62)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:-30%;background:radial-gradient(circle at 20% 20%,rgba(255,79,139,.28),transparent 40%),radial-gradient(circle at 80% 70%,rgba(139,92,255,.30),transparent 45%);animation:drift 14s ease-in-out infinite alternate;z-index:-1}
+@keyframes drift{to{transform:translate(6%,-4%) rotate(8deg)}}
+.app{max-width:440px;margin:0 auto;min-height:100%;padding:22px 18px 40px;display:flex;flex-direction:column}
+.screen{display:none;flex:1;flex-direction:column;animation:in .45s cubic-bezier(.2,.9,.3,1.2)}
+.screen.on{display:flex}
+@keyframes in{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
+
+/* 시작 */
+.badge{align-self:flex-start;font-size:12px;font-weight:700;letter-spacing:.5px;padding:6px 10px;border-radius:999px;background:rgba(255,79,139,.16);color:#ff8db3;border:1px solid rgba(255,79,139,.35)}
+.title{font-size:40px;line-height:1.12;font-weight:900;margin:22px 0 14px;letter-spacing:-1.5px}
+.title em{font-style:normal;background:linear-gradient(90deg,var(--pink),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--sub);font-size:16px;line-height:1.6}
+.rules{margin:26px 0;display:grid;gap:10px}
+.rule{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;background:var(--card);border:1px solid var(--line);font-size:15px}
+.rule b{font-size:22px}
+.cta{margin-top:auto;border:0;width:100%;padding:19px;border-radius:18px;font-size:18px;font-weight:800;color:#fff;background:linear-gradient(90deg,var(--pink),var(--violet));box-shadow:0 10px 30px rgba(255,79,139,.35);cursor:pointer;position:relative;overflow:hidden}
+.cta:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-100%);animation:shine 2.6s infinite}
+@keyframes shine{60%,100%{transform:translateX(100%)}}
+.cta:active{transform:scale(.97)}
+.from{margin-top:14px;text-align:center;font-size:13px;color:var(--sub)}
+
+/* 질문 */
+.top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--sub);font-weight:700}
+.dots{display:flex;gap:4px}
+.dots i{width:16px;height:4px;border-radius:4px;background:var(--line);transition:.3s}
+.dots i.done{background:var(--pink)}
+.timer{height:6px;border-radius:6px;background:var(--line);margin:18px 0 0;overflow:hidden}
+.timer i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--pink),var(--violet));transform-origin:left}
+.timer.urgent i{background:#ff3b3b}
+.q{font-size:28px;font-weight:900;line-height:1.3;letter-spacing:-.8px;margin:34px 0 26px;min-height:74px}
+.choices{display:grid;gap:14px;flex:1;align-content:start}
+.ch{border:1px solid var(--line);background:var(--card);border-radius:22px;padding:22px 18px;display:flex;align-items:center;gap:16px;font-size:19px;font-weight:800;color:#fff;text-align:left;cursor:pointer;transition:transform .12s,background .2s,border-color .2s}
+.ch span{font-size:40px;line-height:1}
+.ch:active{transform:scale(.96)}
+.ch.pick{background:rgba(255,79,139,.22);border-color:var(--pink);transform:scale(1.02)}
+.ch.fade{opacity:.25}
+.hint{text-align:center;color:var(--sub);font-size:13px;margin-top:18px}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* 분석 */
+.load{justify-content:center;align-items:center;text-align:center}
+.orb{width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--pink),var(--violet),var(--pink));animation:spin 1s linear infinite;mask:radial-gradient(circle,transparent 52%,#000 53%);-webkit-mask:radial-gradient(circle,transparent 52%,#000 53%)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loadtxt{margin-top:28px;font-size:17px;font-weight:700;min-height:26px}
+.loadsub{margin-top:8px;color:var(--sub);font-size:13px}
+
+/* 결과 */
+.rcard{perspective:1000px;margin-top:6px}
+.rin{border-radius:26px;padding:28px 22px;background:linear-gradient(160deg,rgba(255,79,139,.25),rgba(139,92,255,.22));border:1px solid rgba(255,255,255,.18);animation:flip .8s cubic-bezier(.2,.9,.3,1.1)}
+@keyframes flip{from{transform:rotateY(90deg) scale(.9);opacity:0}to{transform:none;opacity:1}}
+.rlabel{font-size:13px;color:var(--sub);font-weight:700}
+.remoji{font-size:76px;margin:14px 0 6px}
+.rname{font-size:32px;font-weight:900;letter-spacing:-1px;line-height:1.2}
+.rone{margin-top:10px;font-size:16px;line-height:1.55;color:rgba(255,255,255,.88)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.chip{font-size:13px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.25);border:1px solid var(--line)}
+.caught{margin:16px 0 0;padding:16px;border-radius:18px;background:rgba(0,0,0,.35);border:1px dashed rgba(255,79,139,.6);font-size:15px;line-height:1.55}
+.caught b{color:#ff8db3}
+.sec{margin-top:18px;padding:18px;border-radius:20px;background:var(--card);border:1px solid var(--line)}
+.sec h3{font-size:15px;margin-bottom:10px}
+.sec li{list-style:none;padding:7px 0;font-size:15px;line-height:1.5;border-bottom:1px solid rgba(255,255,255,.06)}
+.sec li:last-child{border:0}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.pair div{padding:14px;border-radius:16px;background:var(--card);border:1px solid var(--line);font-size:13px;color:var(--sub)}
+.pair b{display:block;font-size:30px;margin:6px 0 2px}
+.pair strong{color:#fff;font-size:14px}
+.btn2{margin-top:10px;width:100%;padding:16px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:#fff;font-size:16px;font-weight:800;cursor:pointer}
+.next h3{font-size:18px;font-weight:900;margin:30px 0 4px}
+.next p{color:var(--sub);font-size:13px;margin-bottom:12px}
+.nc{display:flex;gap:14px;align-items:center;padding:16px;border-radius:20px;margin-bottom:10px;background:var(--card);border:1px solid var(--line);cursor:pointer;position:relative;overflow:hidden}
+.nc .ic{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;font-size:30px;flex:none}
+.nc .t{font-weight:800;font-size:15px;line-height:1.4}
+.nc .s{font-size:12px;color:var(--sub);margin-top:4px}
+.nc .tag{position:absolute;top:10px;right:10px;font-size:10px;font-weight:800;padding:3px 7px;border-radius:6px;background:var(--pink)}
+.nc:first-of-type{border-color:rgba(255,79,139,.55);box-shadow:0 0 0 1px rgba(255,79,139,.2),0 8px 24px rgba(255,79,139,.18)}
+.ad{margin:18px 0;min-height:1px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);opacity:0;background:#fff;color:#111;font-weight:700;font-size:14px;padding:12px 18px;border-radius:14px;transition:.3s;pointer-events:none;z-index:9}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- 시작 -->
+<section class="screen on" id="s-start">
+  <div class="badge" id="badge">⚡ 직감 테스트</div>
+  <h1 class="title">고민하면<br><em>지는 거야</em></h1>
+  <p class="lead" id="lead">질문마다 3.5초예요, 넘기면 못 고른 걸로 처리돼요<br>몇 초 망설였는지까지 다 기록해 둘게요</p>
+  <div class="rules">
+    <div class="rule"><b>⏱</b>질문당 3.5초, 10문제면 끝</div>
+    <div class="rule"><b>👆</b>읽지 말고 그냥 눌러</div>
+    <div class="rule"><b>🕵️</b>망설인 질문은 결과에서 들킴</div>
+  </div>
+  <button class="cta" id="go">시작하기</button>
+  <p class="from" id="from">지금까지 테스트한 사람 수는 오픈 후 공개</p>
+</section>
+
+<!-- 질문 -->
+<section class="screen" id="s-quiz">
+  <div class="top"><span id="qn">1 / 10</span><div class="dots" id="dots"></div></div>
+  <div class="timer" id="timer"><i id="bar"></i></div>
+  <div class="q" id="q"></div>
+  <div class="choices" id="choices"></div>
+  <p class="hint">생각하지 말고 손이 먼저 가는 쪽으로</p>
+</section>
+
+<!-- 분석 -->
+<section class="screen load" id="s-load">
+  <div class="orb"></div>
+  <p class="loadtxt" id="loadtxt">답 고른 속도 보는 중</p>
+  <p class="loadsub">잠깐만, 거의 다 됐어</p>
+</section>
+
+<!-- 결과 -->
+<section class="screen" id="s-result">
+  <div class="rcard"><div class="rin">
+    <div class="rlabel">너의 연애 직감 유형</div>
+    <div class="remoji" id="r-emoji"></div>
+    <div class="rname" id="r-name"></div>
+    <p class="rone" id="r-one"></p>
+    <div class="chips" id="r-chips"></div>
+    <div class="caught" id="r-caught"></div>
+  </div></div>
+
+  <div class="sec"><h3>솔직히 이렇잖아요</h3><ul id="r-list"></ul></div>
+  <div class="pair">
+    <div>잘 맞는 유형<b id="r-good"></b><strong id="r-goodn"></strong></div>
+    <div>만나면 피곤한 유형<b id="r-bad"></b><strong id="r-badn"></strong></div>
+  </div>
+
+  <!-- 광고 자리 (애드핏 코드) : 버튼과 붙지 않게 내용 사이에 배치 -->
+  <div class="ad" id="ad-1"></div>
+
+  <button class="cta" id="share" style="margin-top:8px">썸 상대한테 보내서 궁합 보기</button>
+  <button class="btn2" id="save">스토리용 이미지 저장</button>
+
+  <div class="next">
+    <h3 id="next-h">이거 한 사람들이 바로 한 거</h3>
+    <p>결과 보고 나니까 궁금해진 거 맞지?</p>
+    <div id="next-list"></div>
+  </div>
+  <button class="btn2" id="again">다시 해보기</button>
+</section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const V="a";
+// 기록: 구글 폼(pick 방문기록) → 시트. 형식 "버전|이벤트|세션ID|유입"
+const SID=Math.random().toString(36).slice(2,9);let FR="direct";try{FR=new URLSearchParams(location.search).get("r")?"friend":(document.referrer?new URL(document.referrer).hostname:"direct")}catch(x){}
+function track(e){try{if(!location.protocol.startsWith("http"))return;const b=new URLSearchParams();b.append("entry.1016624779",[V,e,SID,FR].join("|"));fetch("https://docs.google.com/forms/d/e/1FAIpQLSf04nq87oC420sNEfEuP0wFoM3ye-Hga7sYIeD989DrfIBKuA/formResponse",{method:"POST",mode:"no-cors",body:b,keepalive:true}).catch(()=>{})}catch(x){}}
+track("view");
+// ===== 데이터 =====
+// a: 먼저 다가감(A) / 기다림(W),  d: 표현 직진(D) / 돌려말함(I)
+const Q=[
+ {q:"썸 상대한테 카톡 왔다",ax:"a",o:[["📱","바로 답장","A"],["⏳","일부러 좀 있다가","W"]]},
+ {q:"좋아하는 사람 생기면",ax:"d",o:[["🗣️","주변에서 다 앎","D"],["🤐","나만 앎","I"]]},
+ {q:"첫 데이트 장소는",ax:"a",o:[["📍","내가 이미 찾아놨음","A"],["🤷","너 가고 싶은 데","W"]]},
+ {q:"서운한 일 생기면",ax:"d",o:[["💬","그날 바로 말함","D"],["😶","혼자 삭힘","I"]]},
+ {q:"3일째 연락이 없다",ax:"a",o:[["📞","내가 먼저 함","A"],["🧊","나도 안 함","W"]]},
+ {q:"사랑한다는 말",ax:"d",o:[["💕","하루에 몇 번도 함","D"],["🫠","오글거려서 못 함","I"]]},
+ {q:"고백은",ax:"a",o:[["💌","내가 한다","A"],["🙏","받고 싶다","W"]]},
+ {q:"질투 날 때",ax:"d",o:[["😤","티 팍팍 냄","D"],["😎","쿨한 척함","I"]]},
+ {q:"싸운 다음 날",ax:"a",o:[["🙋","먼저 연락함","A"],["🫥","상대가 먼저 해야 함","W"]]},
+ {q:"새벽 2시에 보고 싶다",ax:"d",o:[["🌙","보고 싶다고 보냄","D"],["📝","썼다가 지움","I"]]}
+];
+
+const R={
+ AD:{e:"🚜",n:"직진 불도저",one:"좋으면 좋다고 말해야 잠이 오는 사람이에요, 밀당하다 놓친 사람이 몇 명 있잖아요",chips:["#선톡장인","#밀당불가","#표현과다"],
+   l:["읽씹 당하면 '바빴구나' 하고 한 번 더 보내요","데이트 코스를 엑셀로 짜본 적 있어요","고백에 실패해도 3일이면 회복해요"],g:"WD",b:"WI"},
+ AI:{e:"🦊",n:"티 안 나게 다 챙기는 사람",one:"먼저 움직이긴 하는데 말은 절대 안 해요, '밥 먹었어?'가 사실상 고백이에요",chips:["#츤데레","#행동파","#말로는안함"],
+   l:["좋아하는 사람 최애 음료를 이미 외웠어요","'그냥 지나가다 샀어'를 자주 써요","상대가 눈치 못 채면 혼자 서운해해요"],g:"WD",b:"AD"},
+ WD:{e:"🐶",n:"와주면 200% 주는 사람",one:"먼저 다가가는 건 무서운데 일단 시작되면 누구보다 솔직해요, 시작 버튼만 누가 눌러주면 돼요",chips:["#리액션부자","#연애시작어려움","#사귀면올인"],
+   l:["썸 탈 땐 조용한데 사귀면 애교가 폭발해요","'먼저 연락해주면 좋겠다' 생각만 100번 해요","한 번 마음 주면 오래 가요"],g:"AD",b:"WI"},
+ WI:{e:"🐢",n:"속으로만 연애 중",one:"혼자 썸 타고 혼자 설레다가 혼자 정리하는 편이에요, 상대는 좋아한 줄도 몰라요",chips:["#짝사랑장인","#상상연애","#신중함"],
+   l:["카톡 답장 문구를 30분 고친 적 있어요","좋아하는 사람 스토리는 제일 먼저 봐요 (좋아요는 안 눌러요)","'그때 말할걸' 리스트가 있어요"],g:"AI",b:"AD"}
+};
+
+const NEXT=[
+ {ic:"💬",bg:"linear-gradient(135deg,#ff4f8b,#ff8a5c)",t:"그 사람 카톡을 넣으면 호감도가 보여요",s:"답장 속도, ㅋ 개수로 다 보여요",tag:"NEW"},
+ {ic:"🙈",bg:"linear-gradient(135deg,#8b5cff,#5c8bff)",t:"'안 고른' 답으로 보는 진짜 성격",s:"고른 것보다 안 고른 게 더 정확해요",tag:"NEW"},
+ {ic:"🧾",bg:"linear-gradient(135deg,#1fc8a0,#3a8bff)",t:"2026 내 연애 영수증",s:"올해 연애에 쓴 감정 총액 계산",tag:"연말 한정"}
+];
+
+// ===== 상태 =====
+const LIMIT=3500;
+let i=0,ans=[],t0=0,raf=0,locked=false;
+const $=id=>document.getElementById(id);
+
+// ===== 효과음 · 진동 =====
+let ac;
+function blip(f=520,d=.06){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;g.gain.setValueAtTime(.08,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+function buzz(ms){try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
+
+// 미리보기·앱 내 브라우저처럼 주소 변경이 막힌 환경에서도 멈추지 않게
+let curKey="";
+function setUrl(q){try{history.replaceState(null,"",location.pathname+q)}catch(e){}}
+function shareUrl(){let base="";try{base=location.origin!=="null"&&location.protocol.startsWith("http")?location.origin+location.pathname.replace(/[^/]*$/,""):""}catch(e){}return base?base+"?r="+curKey:""}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));$(id).classList.add("on");window.scrollTo(0,0)}
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");setTimeout(()=>t.classList.remove("on"),1800)}
+
+// ===== 진행 =====
+function start(){track("start");i=0;ans=[];$("dots").innerHTML=Q.map(()=>"<i></i>").join("");show("s-quiz");ask()}
+function ask(){
+  locked=false;track("q"+(i+1));
+  const it=Q[i];
+  $("qn").textContent=(i+1)+" / "+Q.length;
+  [...$("dots").children].forEach((d,k)=>d.classList.toggle("done",k<i));
+  $("q").textContent=it.q;
+  $("choices").innerHTML="";
+  it.o.forEach(([em,tx,v],k)=>{
+    const b=document.createElement("button");b.className="ch";
+    b.innerHTML="<span>"+em+"</span>"+tx;
+    b.onclick=()=>pick(v,b);
+    $("choices").appendChild(b);
+  });
+  t0=performance.now();$("timer").classList.remove("urgent");tick();
+}
+function tick(){
+  const el=performance.now()-t0,left=Math.max(0,1-el/LIMIT);
+  $("bar").style.transform="scaleX("+left+")";
+  if(el>LIMIT*0.65)$("timer").classList.add("urgent");
+  if(el>=LIMIT){timeout();return}
+  raf=requestAnimationFrame(tick);
+}
+function pick(v,b){
+  if(locked)return;locked=true;cancelAnimationFrame(raf);
+  const ms=performance.now()-t0;
+  ans.push({v,ms,ax:Q[i].ax,q:Q[i].q,miss:false});
+  blip(560+i*30);buzz(12);
+  [...$("choices").children].forEach(c=>c.classList.add(c===b?"pick":"fade"));
+  setTimeout(next,260);
+}
+function timeout(){
+  locked=true;
+  const it=Q[i];
+  ans.push({v:it.ax==="a"?"W":"I",ms:LIMIT,ax:it.ax,q:it.q,miss:true}); // 못 고른 것 = 소극적 신호
+  blip(180,.15);buzz([30,40,30]);
+  $("choices").classList.add("shake");setTimeout(()=>$("choices").classList.remove("shake"),350);
+  setTimeout(next,450);
+}
+function next(){i++;i<Q.length?ask():analyze()}
+
+// ===== 분석 연출 =====
+function analyze(){track("finish");
+  show("s-load");
+  const lines=["답 고른 속도 보는 중","제일 오래 망설인 질문 찾는 중","못 고른 질문 확인 중","유형 맞춰보는 중"];
+  let k=0;$("loadtxt").textContent=lines[0];
+  const iv=setInterval(()=>{k++;if(k<lines.length){$("loadtxt").textContent=lines[k];blip(400+k*80)}},650);
+  setTimeout(()=>{clearInterval(iv);const res=calc();curKey=res.key;setUrl("?r="+res.key);render(res);blip(880,.18);buzz([20,30,60])},2700);
+}
+function calc(){
+  const c={A:0,W:0,D:0,I:0};ans.forEach(a=>c[a.v]++);
+  const key=(c.A>=c.W?"A":"W")+(c.D>=c.I?"D":"I");
+  const done=ans.filter(a=>!a.miss);
+  const avg=done.length?done.reduce((s,a)=>s+a.ms,0)/done.length:LIMIT;
+  const slow=done.slice().sort((x,y)=>y.ms-x.ms)[0];
+  const miss=ans.filter(a=>a.miss);
+  return {key,avg,slow,miss};
+}
+function render(res){
+  const r=R[res.key];
+  $("r-emoji").textContent=r.e;$("r-name").textContent=r.n;$("r-one").textContent=r.one;
+  const speed=res.avg<1200?"#직감형":res.avg<2000?"#반반형":"#신중형";
+  $("r-chips").innerHTML=[...r.chips,speed].map(x=>'<span class="chip">'+x+'</span>').join("");
+  let cg="";
+  if(res.slow&&res.slow.ms>1500){cg+='너 <b>"'+res.slow.q+'"</b>에서 <b>'+(res.slow.ms/1000).toFixed(1)+'초</b> 망설였지? 거기가 네 진짜 고민 포인트야.';}
+  if(res.miss.length){cg+=(cg?"<br><br>그리고 ":"")+'<b>"'+res.miss[0].q+'"</b>는 아예 못 골랐어'+(res.miss.length>1?' (못 고른 거 총 '+res.miss.length+'개)':'')+'. 답 못 하는 것도 답이야.';}
+  if(!cg)cg="10개 다 바로 골랐어요<br>연애 고민을 별로 안 하는 편이네요";
+  $("r-caught").innerHTML=cg;$("r-caught").style.display="block";
+  $("r-list").innerHTML=r.l.map(x=>"<li>"+x+"</li>").join("");
+  $("r-good").textContent=R[r.g].e;$("r-goodn").textContent=R[r.g].n;
+  $("r-bad").textContent=R[r.b].e;$("r-badn").textContent=R[r.b].n;
+  $("next-list").innerHTML=NEXT.map(n=>'<div class="nc"><span class="tag">'+n.tag+'</span><div class="ic" style="background:'+n.bg+'">'+n.ic+'</div><div><div class="t">'+n.t+'</div><div class="s">'+n.s+'</div></div></div>').join("");
+  document.querySelectorAll(".nc").forEach(n=>n.onclick=()=>{track("next");location.href=["../kakao/","../unpicked/","../receipt/"][[...document.querySelectorAll(".nc")].indexOf(n)]+"?from=love"});
+  document.title="나는 "+r.n+" "+r.e+" | 3.5초 연애 직감 테스트";
+  show("s-result");
+}
+// 공유 링크로 들어온 사람: 결과만 보여주지 말고 '나도 해보기'로 유도
+function fromShare(key){
+  const r=R[key];if(!r)return;
+  $("badge").textContent="👀 친구 결과 도착";
+  $("lead").innerHTML="친구는 <b>"+r.e+" "+r.n+"</b> 나왔대요<br>서로 맞는지 보려면 해봐야 해요";
+  $("go").textContent="나도 3.5초 안에 골라보기";
+  $("from").textContent="친구랑 궁합은 둘 다 해야 나와요";
+}
+
+// ===== 공유 · 저장 =====
+$("share").onclick=()=>{track("share");
+  const url=shareUrl();
+  const txt="나 "+$("r-name").textContent+" 나옴 "+$("r-emoji").textContent+" 너는 3.5초 안에 고를 수 있냐";
+  if(!url){toast("공유는 사이트에서 열었을 때 돼요");return}
+  try{
+    if(navigator.share)navigator.share({title:document.title,text:txt,url}).catch(()=>{});
+    else if(navigator.clipboard)navigator.clipboard.writeText(txt+" "+url).then(()=>toast("링크가 복사됐어요, 카톡에 붙여넣어 주세요"),()=>toast("복사가 막혀 있어요, 주소창 링크를 직접 복사해 주세요"));
+  }catch(e){toast("여기서는 공유가 막혀 있어요")}
+};
+$("save").onclick=()=>{track("save");
+  const W=1080,H=1920,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+  const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,"#2a0f2e");g.addColorStop(1,"#120b1f");x.fillStyle=g;x.fillRect(0,0,W,H);
+  const rg=x.createRadialGradient(300,400,0,300,400,700);rg.addColorStop(0,"rgba(255,79,139,.45)");rg.addColorStop(1,"rgba(255,79,139,0)");x.fillStyle=rg;x.fillRect(0,0,W,H);
+  x.textAlign="center";x.fillStyle="rgba(255,255,255,.7)";x.font="700 44px sans-serif";x.fillText("3.5초 연애 직감 테스트",W/2,300);
+  x.font="260px sans-serif";x.fillText($("r-emoji").textContent,W/2,720);
+  x.fillStyle="#fff";x.font="900 96px sans-serif";x.fillText($("r-name").textContent,W/2,900);
+  x.font="500 46px sans-serif";x.fillStyle="rgba(255,255,255,.85)";
+  wrap(x,$("r-one").textContent,W/2,1020,880,68);
+  x.fillStyle="#ff8db3";x.font="800 48px sans-serif";x.fillText("너는 몇 초 망설일 것 같아?",W/2,1650);
+  try{const a=document.createElement("a");a.download="연애직감_결과.png";a.href=c.toDataURL("image/png");a.click();toast("저장됐어요, 스토리에 올려보세요")}
+  catch(e){toast("여기서는 저장이 막혀 있어요")}
+};
+function wrap(x,t,cx,y,max,lh){let line="";for(const ch of t){const test=line+ch;if(x.measureText(test).width>max){x.fillText(line,cx,y);line=ch;y+=lh}else line=test}x.fillText(line,cx,y)}
+
+$("go").onclick=()=>{blip(700);buzz(15);start()};
+$("again").onclick=()=>{setUrl("");show("s-start")};
+
+let p=null;try{p=new URLSearchParams(location.search).get("r")}catch(e){}
+if(p)fromShare(p);
+</script>
+</body>
+</html>

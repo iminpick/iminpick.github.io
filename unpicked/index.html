@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>'안 고른' 답으로 보는 진짜 성격</title>
+<meta name="description" content="고른 것보다 버린 게 더 정확해요, 4초 안에 골라보세요">
+<meta property="og:title" content="'안 고른' 답으로 보는 진짜 성격">
+<meta property="og:description" content="고른 것보다 버린 게 더 정확해요, 4초 안에 골라보세요">
+<link rel="stylesheet" href="../assets/core.css">
+<style>
+:root{--a:#bf5af2;--aon:#fff}
+.q{margin:36px 0 6px}
+#ctx{font-size:14px;color:#666;margin-bottom:auto;min-height:20px}
+.tname{font-size:24px;font-weight:800;margin-top:30px}
+
+</style>
+</head>
+<body class="">
+<div class="tline" id="tl" style="display:none"></div>
+<div class="app">
+<section class="screen on" id="s-start">
+  <p class="small" id="pre">안 고른 답 테스트</p>
+  <h1 class="big" id="hook" style="margin-top:14px">고른 게 아니라<br>버린 걸로 볼게요</h1>
+  <p class="small" style="margin-top:16px">질문마다 4초예요<br>사람은 고른 것보다 안 고른 데서 더 티가 나요</p>
+  <div style="margin-top:auto"><button class="go" id="go">시작</button></div>
+</section>
+<section class="screen" id="s-quiz">
+  <span class="count" id="count"></span>
+  <h2 class="big q" id="q"></h2>
+  <p id="ctx"></p>
+  <div class="choices" id="choices"></div>
+</section>
+<section class="screen" id="s-wait"><div class="dots"><i></i><i></i><i></i></div></section>
+<section class="screen reveal" id="s-result">
+  <p class="small">결과</p>
+  <p class="hit" id="hit"></p>
+  <div id="extra"></div>
+  <p class="tname" id="tname"></p>
+  <div class="list" id="list"></div>
+  <div class="ad"></div>
+  <div><button class="go" id="share">친구한테 보내기</button><div class="row"><button class="sub" id="save">이미지 저장</button><button class="sub" id="copy">링크 복사</button></div></div>
+  <div class="next" id="next"></div>
+  <button class="again" id="again">다시 하기</button>
+  <p class="foot">재미로 보는 테스트예요<br>답은 저장하지 않아요</p>
+</section>
+</div>
+<script src="../assets/core.js"></script>
+<script src="../assets/quick.js"></script>
+<script>
+
+const R={
+ S:["안정이 제일 무서운 사람",["같은 하루가 반복되면 숨이 막혀요","계획 짜는 척은 하는데 결국 안 지켜요","근데 가끔은 그 뻔한 하루가 그리울 거예요"]],
+ V:["모르는 게 제일 싫은 사람",["새 가게보다 아는 맛집이 좋아요","변수 하나 생기면 하루 종일 신경 쓰여요","대신 주변 사람들은 덕분에 편해요"]],
+ A:["혼자 있으면 생각이 너무 많아지는 사람",["혼자 있으면 쓸데없는 생각부터 시작돼요","그래서 일부러 약속을 잡아요","사실 혼자 정리할 시간이 제일 필요한 사람이에요"]],
+ T:["사람한테 기대는 게 어색한 사람",["힘든 건 다 끝나고 나서야 말해요","도움을 받으면 갚아야 할 것 같아서 불편해요","근데 누가 먼저 물어봐 주면 다 털어놓고 싶어요"]],
+ W:["말보다 행동이 편한 사람",["'괜찮아?' 대신 편의점에서 뭐라도 사다 줘요","속마음을 말로 꺼내는 게 제일 어려워요","그래서 오해를 많이 받아요"]],
+ D:["말로 다 풀어야 하는 사람",["서운한 걸 말 안 하면 병나요","대화로 안 풀리는 게 제일 답답해요","근데 가끔은 말보다 그냥 옆에 있는 게 나을 때도 있어요"]]
+};
+const fk=PICK.param("r");
+quickTest({id:"unpicked",limit:4000,shuffle:true,
+ friend:()=>fk&&R[fk]?["친구는 '"+R[fk][0]+"' 나왔대요","나는 뭘 버리는지 볼까요?"]:null,
+ questions:[
+  {q:"금요일 밤",o:[["집에서 혼자 넷플",["S","A"]],["갑자기 잡힌 술약속",["V","T"]]]},
+  {q:"여행 갈 때",o:[["숙소, 동선 다 정해둠",["S"]],["비행기표만 끊고 감",["V"]]]},
+  {q:"친구가 서운하게 했을 때",o:[["말로 따짐",["W"]],["그냥 연락을 줄임",["D"]]]},
+  {q:"점심 메뉴",o:[["늘 먹던 거",["S"]],["처음 보는 가게",["V"]]]},
+  {q:"고민이 생기면",o:[["혼자 정리함",["A"]],["바로 누구한테 털어놓음",["T"]]]},
+  {q:"좋아하는 사람한테",o:[["좋아한다고 말함",["W"]],["말없이 계속 챙겨줌",["D"]]]},
+  {q:"조별과제",o:[["그냥 내가 다 해버림",["A","D"]],["역할 나눠서 같이 함",["T","W"]]]},
+  {q:"돈이 생기면",o:[["일단 저축",["S"]],["바로 경험에 씀",["V"]]]},
+  {q:"생일날",o:[["조용히 보내고 싶음",["A"]],["다 같이 모여야 함",["T"]]]},
+  {q:"화가 났을 때",o:[["말로 다 풀어냄",["W"]],["나가서 걷거나 운동함",["D"]]]}
+ ],
+ compute(a){
+  const c={S:0,V:0,A:0,T:0,W:0,D:0},gone=[];
+  a.forEach(x=>{if(x.miss)return;x.others.forEach(t=>t.forEach(k=>c[k]++));gone.push(x.otherText[0])});
+  const k=Object.keys(c).sort((p,q)=>c[q]-c[p])[0],r=R[k],g=gone.sort(()=>Math.random()-.5).slice(0,3);
+  const missed=a.filter(x=>x.miss).length;
+  return {hit:"버린 답<br>"+g.map(x=>"<u>'"+x+"'</u>").join(", ")+(missed?"<br>"+missed+"개는 아예 못 골랐어요":""),
+   name:"그래서 당신은 "+r[0],lines:r[1],q:"?r="+k,
+   share:"나 안 고른 답으로 보니까 '"+r[0]+"'래 ㅋㅋ 너는 뭐 버림?",
+   img:[{t:"안 고른 답으로 본 성격",size:42,weight:700,color:"#888"},{t:"버린 답",size:46,weight:700,color:"#bf5af2",gap:60},{t:g.map(x=>"'"+x+"'").join("\n"),size:58,gap:10},{t:r[0],size:78,gap:80}]};
+ }});
+
+</script>
+</body>
+</html>

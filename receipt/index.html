@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>2026 연애 정산서</title>
+<meta name="description" content="올해 감정에 얼마 썼는지 영수증으로 뽑아드려요, 7문제면 끝나요">
+<meta property="og:title" content="2026 연애 정산서">
+<meta property="og:description" content="올해 감정에 얼마 썼는지 영수증으로 뽑아드려요, 7문제면 끝나요">
+<link rel="stylesheet" href="../assets/core.css">
+<style>
+:root{--a:#f4f1ea;--aon:#000}
+.q{margin:36px 0 6px}
+#ctx{font-size:14px;color:#666;margin-bottom:auto;min-height:20px}
+.tname{font-size:24px;font-weight:800;margin-top:30px}
+.rc{background:#f4f1ea;color:#111;margin-top:22px;padding:26px 22px 22px;font-family:"Courier New",ui-monospace,monospace;border-radius:4px;position:relative}
+.rc:after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:10px;background:linear-gradient(-45deg,transparent 7px,#f4f1ea 0) 0 0/14px 10px,linear-gradient(45deg,transparent 7px,#f4f1ea 0) 0 0/14px 10px}
+.rc h3{text-align:center;font-size:20px;letter-spacing:2px}.rc .c{text-align:center;font-size:12px;color:#555;margin:4px 0 14px}
+.rc .l{display:flex;justify-content:space-between;font-size:14px;padding:5px 0}.rc hr{border:0;border-top:1px dashed #999;margin:10px 0}
+.rc .tot{font-size:20px;font-weight:900}.bc{height:44px;margin-top:16px;background:repeating-linear-gradient(90deg,#111 0 2px,transparent 2px 4px,#111 4px 5px,transparent 5px 8px,#111 8px 11px,transparent 11px 12px)}
+</style>
+</head>
+<body class="">
+<div class="tline" id="tl" style="display:none"></div>
+<div class="app">
+<section class="screen on" id="s-start">
+  <p class="small" id="pre">12월 한정</p>
+  <h1 class="big" id="hook" style="margin-top:14px">2026년,<br>감정에 얼마 썼을까요?</h1>
+  <p class="small" style="margin-top:16px">7개만 고르면 올해 연애 영수증을 뽑아드려요</p>
+  <div style="margin-top:auto"><button class="go" id="go">시작</button></div>
+</section>
+<section class="screen" id="s-quiz">
+  <span class="count" id="count"></span>
+  <h2 class="big q" id="q"></h2>
+  <p id="ctx"></p>
+  <div class="choices" id="choices"></div>
+</section>
+<section class="screen" id="s-wait"><div class="dots"><i></i><i></i><i></i></div></section>
+<section class="screen reveal" id="s-result">
+  <p class="small">결과</p>
+  <p class="hit" id="hit"></p>
+  <div id="extra"></div>
+  <p class="tname" id="tname"></p>
+  <div class="list" id="list"></div>
+  <div class="ad"></div>
+  <div><button class="go" id="share">영수증 공유하기</button><div class="row"><button class="sub" id="save">이미지 저장</button><button class="sub" id="copy">링크 복사</button></div></div>
+  <div class="next" id="next"></div>
+  <button class="again" id="again">다시 하기</button>
+  <p class="foot">금액은 재미로 매긴 거예요<br>답은 저장하지 않아요</p>
+</section>
+</div>
+<script src="../assets/core.js"></script>
+<script src="../assets/quick.js"></script>
+<script>
+
+const fs=PICK.param("s"),W=n=>(n<0?"-":"")+Math.abs(n).toLocaleString("ko-KR")+"원";
+quickTest({id:"receipt",limit:0,
+ friend:()=>fs?["친구는 올해 감정에 "+W(+fs)+" 썼대요","나는 얼마 나올까요?"]:null,
+ questions:[
+  {q:"올해 연애 상태",o:[["연애 중",["연애 유지비",320000]],["썸만 탔음",["썸 유지비",180000]],["솔로",["외로움 관리비",90000]]]},
+  {q:"올해 제일 많이 한 것",o:[["카톡 답장 기다리기",["답장 대기료",45000]],["전 애인 인스타 확인",["염탐 이용료",77000]],["혼자 영화 보기",["1인 관람권",14000]]]},
+  {q:"올해 연애 때문에 운 횟수",o:[["0번",["감정 억제세",50000]],["몇 번",["눈물 처리비",30000]],["셀 수 없음",["눈물 대량 구매",120000]]]},
+  {q:"새벽에 보낸 카톡",o:[["없음",["자제력 할인",-20000]],["한두 번",["새벽 감성 요금",40000]],["지우고 싶은 게 있음",["이불킥 위약금",99000]]]},
+  {q:"크리스마스 계획",o:[["있음",["크리스마스 예약금",150000]],["없음",["캐롤 수신료",8000]],["알바함",["시급 위로금",-30000]]]},
+  {q:"올해 나한테 제일 잘한 일",o:[["안 맞는 사람 정리",["손절 수수료",0]],["나한테 돈 씀",["셀프 선물",65000]],["그냥 버틴 것",["버티기 수당",-50000]]]},
+  {q:"내년엔",o:[["연애할 거임",["2027 선결제",100000]],["나부터 챙길 거임",["자기관리 정기권",30000]],["모르겠음",["미정 보관료",10000]]]}
+ ],
+ compute(a){
+  const it=a.map(x=>x.data),tot=it.reduce((s,x)=>s+x[1],0),top=it.slice().sort((p,q)=>q[1]-p[1])[0];
+  let name,lines;
+  if(tot>=500000){name="감정 과소비형";lines=["올해 마음을 아주 크게 썼어요","잔고는 바닥인데 후회는 별로 없어요","내년엔 할부로 나눠 써봐요"]}
+  else if(tot>=250000){name="평균 감정 지출형";lines=["쓸 땐 쓰고 아낄 땐 아꼈어요","크게 다치진 않았는데 지치긴 했어요","이 정도면 꽤 잘 버틴 한 해예요"]}
+  else{name="감정 절약형";lines=["올해 마음을 거의 안 꺼냈어요","덕분에 안 다쳤는데 좀 심심했어요","내년엔 조금 써도 괜찮아요"]}
+  const d=new Date(),ds=d.getFullYear()+"."+String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0");
+  const html='<div class="rc"><h3>2026 감정 마트</h3><p class="c">영수증 #'+Math.floor(Math.random()*90000+10000)+' · '+ds+'</p>'+it.map(x=>'<div class="l"><span>'+x[0]+'</span><span>'+W(x[1])+'</span></div>').join("")+'<hr><div class="l tot"><span>합계</span><span>'+W(tot)+'</span></div><div class="l"><span>결제 수단</span><span>멘탈 (잔액 부족)</span></div><div class="bc"></div><p class="c" style="margin:8px 0 0">교환·환불 불가</p></div>';
+  return {hit:"올해 제일 많이 쓴 곳<br><u>"+top[0]+"</u>",name,lines,html,q:"?s="+tot,
+   share:"내 2026 연애 정산서 총 "+W(tot)+" 나옴 ㅋㅋ 너는 얼마?",imgBg:"#f4f1ea",
+   img:[{t:"2026 감정 마트 영수증",size:48,weight:800,color:"#111"},{t:it.map(x=>x[0]+"  "+W(x[1])).join("\n"),size:42,weight:500,color:"#333",gap:50},{t:"합계 "+W(tot),size:84,color:"#111",gap:60},{t:name,size:60,color:"#111",gap:10},{t:"너는 얼마 나와?",size:46,weight:700,color:"#b3261e",gap:60}]};
+ }});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>우리 단톡방에서 나는 뭐 담당일까?</title>
+<meta name="description" content="단톡방에 던지면 다들 해봐요, 8문제에 4초씩">
+<meta property="og:title" content="우리 단톡방에서 나는 뭐 담당일까?">
+<meta property="og:description" content="단톡방에 던지면 다들 해봐요, 8문제에 4초씩">
+<link rel="stylesheet" href="../assets/core.css">
+<style>
+:root{--a:#ffd60a;--aon:#000}
+.q{margin:36px 0 6px}
+#ctx{font-size:14px;color:#666;margin-bottom:auto;min-height:20px}
+.tname{font-size:24px;font-weight:800;margin-top:30px}
+
+</style>
+</head>
+<body class="">
+<div class="tline" id="tl" style="display:none"></div>
+<div class="app">
+<section class="screen on" id="s-start">
+  <p class="small" id="pre">단톡방 역할 테스트</p>
+  <h1 class="big" id="hook" style="margin-top:14px">우리 단톡방에서<br>나는 뭐 담당일까요?</h1>
+  <p class="small" style="margin-top:16px">8문제, 질문마다 4초예요<br>끝나면 단톡방에 던져보세요</p>
+  <div style="margin-top:auto"><button class="go" id="go">시작</button></div>
+</section>
+<section class="screen" id="s-quiz">
+  <span class="count" id="count"></span>
+  <h2 class="big q" id="q"></h2>
+  <p id="ctx"></p>
+  <div class="choices" id="choices"></div>
+</section>
+<section class="screen" id="s-wait"><div class="dots"><i></i><i></i><i></i></div></section>
+<section class="screen reveal" id="s-result">
+  <p class="small">결과</p>
+  <p class="hit" id="hit"></p>
+  <div id="extra"></div>
+  <p class="tname" id="tname"></p>
+  <div class="list" id="list"></div>
+  <div class="ad"></div>
+  <div><button class="go" id="share">단톡방에 던지기</button><div class="row"><button class="sub" id="save">이미지 저장</button><button class="sub" id="copy">링크 복사</button></div></div>
+  <div class="next" id="next"></div>
+  <button class="again" id="again">다시 하기</button>
+  <p class="foot">재미로 보는 테스트예요<br>답은 저장하지 않아요</p>
+</section>
+</div>
+<script src="../assets/core.js"></script>
+<script src="../assets/quick.js"></script>
+<script>
+
+const R={
+ ghost:["읽씹 유령",["단톡방 알림은 1년째 꺼져 있어요","대화가 다 끝나면 'ㅇㅋ' 하나 남겨요","근데 약속 장소엔 제일 먼저 와 있어요"]],
+ react:["리액션 봇",["무슨 말이든 'ㅋㅋㅋㅋ'로 받아요","없으면 단톡방이 썰렁해져요","가끔 안 읽고 웃는 거 다 들켜요"]],
+ notice:["총무",["날짜 투표는 항상 내가 올려요","정산도 내가 하는데 아무도 안 고마워해요","내가 나가면 이 모임은 끝나요"]],
+ meme:["짤 공급책",["대화보다 짤로 말해요","갤러리의 절반이 웃긴 사진이에요","분위기가 싸해지면 짤로 수습해요"]],
+ night:["새벽 감성 담당",["새벽 1시에 갑자기 진지해져요","'우리 진짜 오래 봤다' 같은 말을 해요","다음 날 아침에 조용히 메시지를 지워요"]],
+ cancel:["약속 파토 담당",["'나 좀 늦을 듯'이 시그니처예요","출발했다는 말은 아직 집이라는 뜻이에요","그래도 다들 기다려줘요"]]
+};
+const fk=PICK.param("r");
+quickTest({id:"groupchat",limit:4000,shuffle:true,
+ friend:()=>fk&&R[fk]?["친구는 '"+R[fk][0]+"'래요","나는 단톡방에서 뭘까요?"]:null,
+ questions:[
+  {q:"단톡방에 메시지 300개 쌓여 있음",o:[["안 읽음 표시만 지움","ghost"],["처음부터 다 읽음","notice"],["마지막 거에만 ㅋㅋ","react"]]},
+  {q:"누가 웃긴 짤 올림",o:[["ㅋㅋㅋㅋㅋㅋ","react"],["더 웃긴 짤로 받아침","meme"],["안 봄","ghost"]]},
+  {q:"\"약속 날짜 정하자\"",o:[["투표 올림","notice"],["난 아무 때나","react"],["그날 갑자기 일 생김","cancel"]]},
+  {q:"새벽 1시 단톡방",o:[["'다들 자?'","night"],["이미 자는 중","ghost"],["유튜브 링크 던짐","meme"]]},
+  {q:"오늘 생일인 친구",o:[["제일 먼저 축하함","notice"],["축하 짤 보냄","meme"],["다음 날 늦게 축하함","ghost"]]},
+  {q:"약속 1시간 전",o:[["'나 좀 늦을 듯'","cancel"],["이미 도착함","notice"],["'출발함' (안 함)","cancel"]]},
+  {q:"누가 진지한 고민 올림",o:[["긴 답장 씀","night"],["힘내 ㅠ","react"],["읽고 조용히 나감","ghost"]]},
+  {q:"단톡방이 일주일째 조용함",o:[["뭐라도 던짐","meme"],["옛날 사진 꺼냄","night"],["조용한 게 좋음","ghost"]]}
+ ],
+ compute(a){
+  const c={};a.forEach(x=>{if(!x.miss)c[x.data]=(c[x.data]||0)+1});
+  const mc=a.filter(x=>x.miss).length;if(mc>=3)c.ghost=(c.ghost||0)+mc;
+  const k=Object.keys(c).sort((p,q)=>c[q]-c[p])[0]||"ghost",r=R[k];
+  return {hit:"우리 단톡방에서 나는<br><u>"+r[0]+"</u>",name:"",lines:r[1],q:"?r="+k,
+   share:"우리 단톡방에서 나는 '"+r[0]+"'래 ㅋㅋ 너네도 해봐",
+   img:[{t:"우리 단톡방에서 나는",size:46,weight:700,color:"#888"},{t:r[0],size:110,gap:40},{t:r[1][0],size:50,weight:600,color:"#ccc",gap:60},{t:"너는 뭐 담당이야?",size:46,weight:700,color:"#ffd60a",gap:80}]};
+ }});
+
+</script>
+</body>
+</html>

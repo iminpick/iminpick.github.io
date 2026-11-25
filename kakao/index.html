@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>그 사람 카톡 넣으면 나오는 것들</title>
+<meta name="description" content="누가 먼저 연락했는지, 답장이 몇 분 걸렸는지, ㅋ를 몇 개 썼는지 보여드려요, 파일은 어디에도 보내지 않아요">
+<meta property="og:title" content="그 사람 카톡 넣으면 나오는 것들">
+<meta property="og:description" content="누가 먼저 연락했는지, 답장이 몇 분 걸렸는지 보여드려요">
+<link rel="stylesheet" href="../assets/core.css">
+<style>
+:root{--a:#fee500;--aon:#000}
+.how{margin-top:22px;border-top:1px solid #222}
+.how p{font-size:15px;line-height:1.55;padding:11px 0;border-bottom:1px solid #1a1a1a;color:#bbb}
+.how b{color:#fff}
+.file{display:block;text-align:center;cursor:pointer}
+.file input{display:none}
+.lock{font-size:13px;color:#777;margin-top:12px;line-height:1.5}
+.who{display:grid;gap:10px;margin-top:24px}
+.cmp{margin-top:26px}
+.cmp .r{padding:14px 0;border-top:1px solid #222}
+.cmp .k{font-size:13px;color:#888;font-weight:700;margin-bottom:8px}
+.cmp .v{display:flex;justify-content:space-between;font-size:17px;font-weight:800}
+.cmp .v span:last-child{color:var(--a)}
+.bars{margin-top:8px;display:flex;height:8px;border-radius:4px;overflow:hidden;background:#222}
+.bars i{display:block;height:100%}
+.bars i:first-child{background:#fff}.bars i:last-child{background:var(--a)}
+.score{display:flex;gap:10px;margin-top:22px}
+.score div{flex:1;padding:16px;border:1px solid #333;border-radius:14px}
+.score b{display:block;font-size:40px;font-weight:900;margin-top:4px}
+.score div:last-child b{color:var(--a)}
+.note{font-size:13px;color:#777;line-height:1.55;margin-top:14px}
+textarea{width:100%;height:120px;margin-top:10px;background:#111;color:#ddd;border:1px solid #333;border-radius:12px;padding:12px;font-size:13px;display:none}
+</style>
+</head>
+<body>
+<div class="app">
+<section class="screen on" id="s-start">
+  <p class="small">카톡 대화 분석</p>
+  <h1 class="big" style="margin-top:14px">그 사람 카톡을<br>넣으면 다 보여요</h1>
+  <p class="small" style="margin-top:14px">누가 먼저 연락했는지, 답장에 몇 분 걸렸는지, ㅋ를 몇 개 썼는지 보여드려요</p>
+  <div class="how">
+    <p><b>1.</b> 카톡방에 들어가서 오른쪽 위 <b>≡</b> 누르기</p>
+    <p><b>2.</b> <b>톱니바퀴(설정)</b> → <b>대화 내용 내보내기</b></p>
+    <p><b>3.</b> <b>텍스트만 보내기</b> → 파일 저장</p>
+    <p><b>4.</b> 아래 버튼을 눌러서 그 파일 선택</p>
+  </div>
+  <div style="margin-top:auto;padding-top:24px">
+    <label class="go file">카톡 파일 넣기<input type="file" id="file" accept=".txt,text/plain"></label>
+    <div class="row"><button class="sub" id="demo">예시로 먼저 보기</button><button class="sub" id="pasteBtn">글로 붙여넣기</button></div>
+    <textarea id="paste" placeholder="내보낸 대화 내용을 여기 붙여넣고 아래 버튼"></textarea>
+    <button class="sub" id="pasteGo" style="display:none;margin-top:8px">이걸로 분석</button>
+    <p class="lock">파일은 이 화면 안에서만 읽어요<br>서버로 보내지 않고 저장도 하지 않아요</p>
+  </div>
+</section>
+<section class="screen" id="s-who">
+  <p class="small">거의 다 됐어요</p>
+  <h2 class="big" style="margin-top:14px">이 중에<br>누가 본인인가요?</h2>
+  <p class="small" id="whoinfo" style="margin-top:12px"></p>
+  <div class="who" id="who"></div>
+</section>
+<section class="screen" id="s-wait"><div class="dots"><i></i><i></i><i></i></div></section>
+<section class="screen reveal" id="s-result">
+  <p class="small" id="rlabel">결과</p>
+  <p class="hit" id="hit"></p>
+  <div class="score" id="score"></div>
+  <div class="cmp" id="cmp"></div>
+  <p class="note">대화 습관을 숫자로 센 거예요<br>마음까지 맞히는 건 아니니까 재미로만 봐주세요</p>
+  <div class="ad"></div>
+  <div><button class="go" id="share">친구한테 이 테스트 보내기</button><div class="row"><button class="sub" id="save">점수만 이미지로</button><button class="sub" id="copy">링크 복사</button></div></div>
+  <div class="next" id="next"></div>
+  <button class="again" id="again">다른 대화 넣기</button>
+</section>
+</div>
+<script src="../assets/core.js"></script>
+<script>
+const P=PICK,$=P.$;P.init({id:"kakao"});
+let MSG=[],ME="",YOU="",RES=null,DEMO=false;
+
+// ===== 파싱: PC / 안드로이드 / 아이폰 내보내기 형식 =====
+function hh(ap,h){h=+h;if(ap==="오후"&&h<12)h+=12;if(ap==="오전"&&h===12)h=0;return h}
+function parse(txt){
+  const out=[];let day=null;
+  const reDay=/^-+\s*(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/;
+  const rePC=/^\[(.+?)\]\s*\[(오전|오후)\s*(\d{1,2}):(\d{2})\]\s?(.*)$/;
+  const reAnd=/^(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일\s*(오전|오후)\s*(\d{1,2}):(\d{2}),\s*(.+?)\s*:\s?(.*)$/;
+  const reIOS=/^(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(?:(오전|오후)\s*)?(\d{1,2}):(\d{2}),\s*(.+?)\s*:\s?(.*)$/;
+  txt.replace(/\r/g,"").split("\n").forEach(line=>{
+    let m;
+    if((m=line.match(reDay))){day=[+m[1],+m[2],+m[3]];return}
+    if((m=line.match(rePC))&&day){out.push({t:new Date(day[0],day[1]-1,day[2],hh(m[2],m[3]),+m[4]),n:m[1],x:m[5]});return}
+    if((m=line.match(reAnd))){out.push({t:new Date(+m[1],m[2]-1,+m[3],hh(m[4],m[5]),+m[6]),n:m[7],x:m[8]});return}
+    if((m=line.match(reIOS))){out.push({t:new Date(+m[1],m[2]-1,+m[3],m[4]?hh(m[4],m[5]):+m[5],+m[6]),n:m[7],x:m[8]});return}
+    if(out.length&&line.trim())out[out.length-1].x+="\n"+line;
+  });
+  return out.filter(o=>!isNaN(o.t));
+}
+function demoText(){
+  // 예시 대화 (지어낸 것)
+  const L=[["민지","뭐해?",0],["나","나 그냥 누워있어 ㅋㅋ",14],["민지","ㅋㅋㅋㅋ 나도",2],["민지","오늘 그거 봤어? 드라마",1],["나","아직 안 봤어",40],["민지","헐 봐야 돼 ㅋㅋㅋ",1],["나","ㅇㅇ",55],["민지","주말에 뭐 해?",600],["나","아직 모르겠어",90],["민지","아 그렇구나 ㅎㅎ",2],["나","너는?",30],["민지","나도 딱히? ㅋㅋ 같이 볼래 그거",1],["나","그래",120],["민지","오 진짜? ㅋㅋㅋ 몇 시?",1],["나","아무 때나",45],["민지","자?",900],["민지","아 잤구나 ㅋㅋ",3],["나","아 미안 잠들었어",420],["민지","ㅋㅋㅋ 괜찮아",1],["민지","오늘 점심 뭐 먹었어?",700],["나","김밥",80],["민지","ㅋㅋㅋㅋ 나도 김밥 먹고 싶다",2]];
+  let t=new Date(2026,10,20,21,0),s="--------------- 2026년 11월 20일 금요일 ---------------\n";
+  L.forEach(([n,x,g])=>{t=new Date(t.getTime()+g*60000);const h=t.getHours(),ap=h<12?"오전":"오후",h12=h%12||12;s+="["+n+"] ["+ap+" "+h12+":"+String(t.getMinutes()).padStart(2,"0")+"] "+x+"\n"});
+  return s;
+}
+function load(txt,demo){
+  MSG=parse(txt);DEMO=!!demo;
+  if(MSG.length<10){P.toast("대화를 못 읽었어요, '텍스트만 보내기'로 내보낸 파일인지 확인해 주세요");P.track("parse_fail");return}
+  P.track(demo?"demo":"upload");
+  const cnt={};MSG.forEach(m=>cnt[m.n]=(cnt[m.n]||0)+1);
+  const names=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]);
+  if(demo){ME="나";YOU="민지";return analyze()}
+  $("whoinfo").textContent="메시지 "+MSG.length+"개를 읽었어요"+(names.length>2?", 단톡방이라 제일 많이 말한 두 명만 볼게요":"");
+  $("who").innerHTML="";names.slice(0,2).forEach((n,k)=>{const b=document.createElement("button");b.className="ch";b.textContent=n;b.onclick=()=>{ME=n;YOU=names.slice(0,2)[1-k];analyze()};$("who").appendChild(b)});
+  if(names.length<2){P.toast("두 명 이상 대화한 방만 볼 수 있어요");return}
+  P.show("s-who");
+}
+function med(a){if(!a.length)return null;a=a.slice().sort((x,y)=>x-y);return a[Math.floor(a.length/2)]}
+function fmt(m){if(m==null)return "-";if(m<1)return "1분 안";if(m<60)return Math.round(m)+"분";return (m/60).toFixed(1)+"시간"}
+function analyze(){
+  P.show("s-wait");P.track("analyze");
+  const ms=MSG.filter(m=>m.n===ME||m.n===YOU);
+  const S={};[ME,YOU].forEach(n=>S[n]={c:0,init:0,rep:[],k:0,q:0,night:0,len:0});
+  let prev=null;
+  ms.forEach(m=>{
+    const s=S[m.n];s.c++;s.len+=m.x.length;s.k+=(m.x.match(/[ㅋㅎ]/g)||[]).length;s.q+=(m.x.match(/\?/g)||[]).length;
+    const h=m.t.getHours();if(h<5)s.night++;
+    if(!prev||(m.t-prev.t)>=6*3600e3)s.init++;
+    else if(prev.n!==m.n){const d=(m.t-prev.t)/60000;if(d<=12*60)s.rep.push(d)}
+    prev=m;
+  });
+  const a=S[ME],b=S[YOU],ra=med(a.rep),rb=med(b.rep);
+  // 관심 지수: 먼저 연락 30, 답장 속도 25, 말한 양 20, 질문 15, 웃음 10 (상대적 비율)
+  const share=(x,y)=>x+y?x/(x+y):.5;
+  const spd=(x,y)=>(x==null||y==null)?.5:(y+1)/((x+1)+(y+1));
+  const idx=(p,q,rp,rq)=>Math.round(100*(.30*share(p.init,q.init)+.25*spd(rp,rq)+.20*share(p.c,q.c)+.15*share(p.q,q.q)+.10*share(p.k/Math.max(1,p.c),q.k/Math.max(1,q.c))));
+  const iMe=idx(a,b,ra,rb),iYou=idx(b,a,rb,ra);
+  RES={iMe,iYou};
+  let hit;
+  if(b.init>a.init*1.5)hit="먼저 연락한 건 대부분 <u>"+YOU+"</u>예요<br>"+YOU+" "+b.init+"번, 나 "+a.init+"번";
+  else if(a.init>b.init*1.5)hit="먼저 연락하는 건 거의 <u>나</u>예요<br>나 "+a.init+"번, "+YOU+" "+b.init+"번";
+  else if(rb!=null&&ra!=null&&rb<ra/2)hit=YOU+"는 답장에 <u>"+fmt(rb)+"</u>,<br>나는 "+fmt(ra)+" 걸려요";
+  else if(rb!=null&&ra!=null&&ra<rb/2)hit="나는 답장에 <u>"+fmt(ra)+"</u>,<br>"+YOU+"는 "+fmt(rb)+" 걸려요";
+  else hit="둘이 꽤 <u>비슷하게</u> 주고받아요";
+  $("rlabel").textContent=(DEMO?"예시 결과 · ":"")+"나 vs "+YOU;
+  $("hit").innerHTML=hit;
+  $("score").innerHTML='<div><span class="tiny">내 관심 지수</span><b>'+iMe+'</b></div><div><span class="tiny">'+YOU+' 관심 지수</span><b>'+iYou+'</b></div>';
+  const row=(k,x,y,fx)=>{const t=(x||0)+(y||0)||1;return '<div class="r"><p class="k">'+k+'</p><div class="v"><span>나 '+(fx?fx(x):x)+'</span><span>'+YOU+' '+(fx?fx(y):y)+'</span></div><div class="bars"><i style="width:'+((x||0)/t*100)+'%"></i><i style="width:'+((y||0)/t*100)+'%"></i></div></div>'};
+  $("cmp").innerHTML=row("먼저 연락한 횟수",a.init,b.init)+row("보낸 메시지",a.c,b.c)+'<div class="r"><p class="k">답장 걸리는 시간 (중간값)</p><div class="v"><span>나 '+fmt(ra)+'</span><span>'+YOU+' '+fmt(rb)+'</span></div></div>'+row("물어본 횟수 (?)",a.q,b.q)+row("ㅋ, ㅎ 개수",a.k,b.k)+row("새벽 0~5시 메시지",a.night,b.night);
+  setTimeout(()=>{P.show("s-result");P.renderNext($("next"));[...$("s-result").children].forEach((e,k)=>{e.classList.remove("show");setTimeout(()=>e.classList.add("show"),k*200)})},1400);
+}
+$("file").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>load(r.result,false);r.readAsText(f,"utf-8")};
+$("demo").onclick=()=>load(demoText(),true);
+$("pasteBtn").onclick=()=>{$("paste").style.display="block";$("pasteGo").style.display="block";$("paste").focus()};
+$("pasteGo").onclick=()=>load($("paste").value,false);
+$("again").onclick=()=>{$("file").value="";P.show("s-start")};
+// 공유에는 대화 내용·이름을 절대 넣지 않음
+$("share").onclick=()=>P.share("카톡 넣었더니 관심 지수 "+RES.iYou+" 나옴 ㅋㅋ 너도 넣어봐","");
+$("copy").onclick=()=>P.copyLink("");
+$("save").onclick=()=>P.saveImage([{t:"카톡 대화 분석",size:44,weight:700,color:"#888"},{t:"내 관심 지수 "+RES.iMe,size:90,gap:60},{t:"상대 관심 지수 "+RES.iYou,size:90,color:"#fee500",gap:20},{t:"너도 넣어봐",size:46,weight:700,color:"#ccc",gap:100}],"kakao");
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>아임인픽 — 1분짜리 테스트랑 게임</title>
+<meta name="description" content="연애 직감, 썸 7일, 카톡 분석, 맞춤법 퀴즈까지 1분이면 끝나는 것만 모았어요">
+<meta property="og:title" content="아임인픽 — 1분짜리 테스트랑 게임">
+<meta property="og:description" content="1분이면 끝나는 것만 모았어요">
+<link rel="stylesheet" href="assets/core.css">
+<style>
+.hd{margin:8px 0 26px}
+.it{display:block;padding:20px 0;border-top:1px solid #222}
+.it b{display:block;font-size:20px;line-height:1.4}
+.it span{display:block;font-size:14px;color:#777;margin-top:4px}
+.tag{display:inline-block;font-size:11px;font-weight:800;color:#000;background:#fff;border-radius:4px;padding:2px 5px;margin-right:6px;vertical-align:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <p class="small">아임인픽</p>
+  <h1 class="big hd">1분이면 끝나는 것만<br>모아뒀어요</h1>
+  <div id="list"></div>
+  <div class="ad"></div>
+  <p class="foot">결과는 재미로만 봐주세요<br>입력한 내용은 저장하지 않아요<br>© 2026 아임인픽</p>
+</div>
+<script src="assets/core.js"></script>
+<script>
+PICK.init({id:"hub"});
+const order=["some7","ignore","love","kakao","receipt","unpicked","groupchat","spell"];
+PICK.$("list").innerHTML=order.map(id=>PICK.CATALOG.find(c=>c.id===id)).map(c=>'<a class="it" href="'+c.id+'/?from=hub" data-id="'+c.id+'"><b>'+(c.game?'<i class="tag">게임</i>':'')+(c.season?'<i class="tag">12월</i>':'')+c.t+'</b><span>'+c.s+'</span></a>').join("");
+document.querySelectorAll(".it").forEach(a=>a.addEventListener("click",()=>PICK.track("next:"+a.dataset.id)));
+</script>
+</body>
+</html>
