@@ -34,7 +34,7 @@ body{overflow-x:hidden}
 .typing i{width:6px;height:6px;border-radius:50%;background:#888;animation:blink 1s infinite}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
 .dock{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:460px;background:linear-gradient(transparent,#000 22%);padding:28px 18px 20px;z-index:5}
-.tbar{height:3px;background:#222;border-radius:3px;overflow:hidden;margin-bottom:10px}
+.tbar{display:none;height:3px;background:#222;border-radius:3px;overflow:hidden;margin-bottom:10px}
 .tbar i{display:block;height:100%;background:#fff;transform-origin:left}
 .tbar.hurry i{background:#ff453a}
 .opts{display:grid;gap:8px}
@@ -63,7 +63,7 @@ body{overflow-x:hidden}
 <section class="screen on" id="s-start">
   <p class="small" id="pre">카톡 연애 게임</p>
   <h1 class="big" id="hook" style="margin-top:14px">지우랑 썸 7일<br>사귈 수 있을까요?</h1>
-  <p class="small" style="margin-top:16px">카톡이 오면 답장을 골라주세요<br>너무 들이대도, 너무 무심해도 끝나요<br>날이 갈수록 고를 시간이 줄어들어요</p>
+  <p class="small" style="margin-top:16px">카톡이 오면 답장을 골라주세요<br>너무 들이대도, 너무 무심해도 끝나요</p>
   <p class="small" id="colline" style="margin-top:12px;color:#ccc"></p>
   <div style="margin-top:auto"><button class="go" id="go">1일째 시작</button></div>
 </section>
@@ -155,7 +155,7 @@ async function run(){
   lim=Math.max(3200,6800-d*500);
   const sh=opts.slice().sort(()=>Math.random()-.5);
   $("opts").innerHTML="";sh.forEach(o=>{const b=document.createElement("button");b.className="op";b.textContent=o[0];b.onclick=()=>answer(o,false);$("opts").appendChild(b)});
-  lock=false;t0=performance.now();$("tbar").classList.remove("hurry");tick();
+  lock=false;t0=performance.now();
 }
 function tick(){const el=performance.now()-t0;$("ti").style.transform="scaleX("+Math.max(0,1-el/lim)+")";if(el>lim*.6)$("tbar").classList.add("hurry");if(el>=lim){const e=EV[k],to=e[4]||[-5,"C","","(읽음)"];return answer([to[3],to[0],to[1],to[2]],true)}raf=requestAnimationFrame(tick)}
 async function answer(o,timeout){

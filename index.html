@@ -27,7 +27,7 @@
 <script src="assets/core.js"></script>
 <script>
 PICK.init({id:"hub"});
-const order=["some7","ignore","love","kakao","receipt","unpicked","groupchat","spell"];
+const order=["some7","love","kakao","receipt","unpicked","groupchat","spell"];
 PICK.$("list").innerHTML=order.map(id=>PICK.CATALOG.find(c=>c.id===id)).map(c=>'<a class="it" href="'+c.id+'/?from=hub" data-id="'+c.id+'"><b>'+(c.game?'<i class="tag">게임</i>':'')+(c.season?'<i class="tag">12월</i>':'')+c.t+'</b><span>'+c.s+'</span></a>').join("");
 document.querySelectorAll(".it").forEach(a=>a.addEventListener("click",()=>PICK.track("next:"+a.dataset.id)));
 </script>

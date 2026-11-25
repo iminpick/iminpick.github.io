@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>3.5초 안에 골라</title>
-<meta name="description" content="고민하면 다 티가 나요, 몇 초 멈췄는지까지 기록돼요">
-<meta property="og:title" content="3.5초 안에 골라">
-<meta property="og:description" content="고민하면 다 티가 나요">
+<title>연애 직감 테스트</title>
+<meta name="description" content="생각나는 대로 골라주세요, 몇 초 고민했는지까지 보여드려요">
+<meta property="og:title" content="연애 직감 테스트">
+<meta property="og:description" content="몇 초 고민했는지까지 보여드려요">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#0b0b0d;color:#fff;min-height:100%}
@@ -64,8 +64,8 @@ function track(e){try{if(!location.protocol.startsWith("http"))return;const b=ne
 track("view");
 const TEST={
   id:"love-gut",
-  limit:3500,
-  share:(t)=>"나 '"+t+"' 나옴 ㅋㅋ 너는 3.5초 안에 고를 수 있냐",
+  limit:0,
+  share:(t)=>"나 '"+t+"' 나옴 ㅋㅋ 너는 뭐 나오는지 해봐",
   fromFriend:(t)=>["친구는 '"+t+"' 나왔대","너도 해봐야 맞는지 나옴"],
   questions:[
     {q:"썸 타는 사람한테 카톡 옴",ax:"a",o:[["바로 답장","A"],["좀 있다가","W"]]},
@@ -90,7 +90,7 @@ const TEST={
   next:[
     {t:"그 사람 카톡을 넣으면 나한테 관심 있는지 보여요",s:"답장 속도랑 ㅋ 개수로 봐요",u:"../kakao/?from=love"},
     {t:"'안 고른' 답으로 보는 진짜 성격",s:"고른 것보다 이게 더 잘 맞아요",u:"../unpicked/?from=love"},
-    {t:"썸남 카톡 읽씹, 몇 초 버틸 수 있어요?",s:"답장 누르면 끝나는 게임",u:"../ignore/?from=love"},{t:"2026 연애 정산서",s:"12월 한정",u:"../receipt/?from=love"}
+    {t:"썸 7일: 사귈 수 있을까",s:"카톡으로 7일, 엔딩 8개 모으는 게임",u:"../some7/?from=love"},{t:"2026 연애 정산서",s:"12월 한정",u:"../receipt/?from=love"}
   ]
 };
 // 친구 말투로 바꾼 질문 (판정 데이터는 TEST와 동일)
@@ -109,7 +109,7 @@ async function intro(){
   const p=new URLSearchParams(location.search).get("r");
   const d=new Date();$("chat").innerHTML='<p class="time">오늘 '+(d.getHours()<12?"오전 ":"오후 ")+((d.getHours()%12)||12)+":"+String(d.getMinutes()).padStart(2,"0")+'</p>';
   if(p&&TEST.results[p]){await say("야 이거 해봐 ㅋㅋ");await say("나 이거 했는데 <b>'"+TEST.results[p].n+"'</b> 나옴");await say("너도 해야 우리 맞는지 나옴")}
-  else{await say("야 나 질문 10개만 할게");await say("고민하지 말고 바로 답해 <b>3.5초</b> 넘으면 못 고른 걸로 침 ㅋㅋ");await say("몇 초 멈췄는지 다 보임")}
+  else{await say("야 나 질문 10개만 할게");await say("생각나는 대로 답해 ㅋㅋ");await say("몇 초 멈췄는지 다 보임")}
   opts([["ㅇㅋ 해봐",b=>{track("start");b.classList.add("pick");scr("s-quiz");setTimeout(()=>{bub("me","ㅇㅋ 해봐");ask()},200)}]]);
 }
 async function ask(){
@@ -117,7 +117,7 @@ async function ask(){
   await say(CQ[i],450+Math.random()*300);
   const it=TEST.questions[i];
   opts(it.o.map(([tx,v])=>[tx,b=>pick(v,tx,b)]));
-  $("tb").style.visibility="visible";$("tb").classList.remove("h");lock=false;t0=performance.now();tick();
+  lock=false;t0=performance.now();
 }
 function tick(){const el=performance.now()-t0;$("ti").style.transform="scaleX("+Math.max(0,1-el/TEST.limit)+")";if(el>TEST.limit*.6)$("tb").classList.add("h");if(el>=TEST.limit)return miss();raf=requestAnimationFrame(tick)}
 function pick(v,tx,b){
@@ -146,7 +146,7 @@ async function finish(){
   await say("그래서 너는 <span class='big'>"+r.n+"</span>",900);
   for(const l of r.l)await say(l,600);
   await say("너랑 잘 맞는 사람은 <b>"+TEST.results[r.g].n+"</b>",700);
-  scr("s-result");document.title="나는 '"+r.n+"' | 3.5초 안에 골라";
+  scr("s-result");document.title="나는 '"+r.n+"' | 연애 직감 테스트";
   const res=document.createElement("div");res.className="res";
   res.innerHTML='<div class="ad"></div><button class="btn" id="share">이거 그 사람한테 보내기</button><div class="row"><button class="sub" id="save">대화 캡처 저장</button><button class="sub" id="copy">링크 복사</button></div><div style="margin-top:22px;color:#777;font-size:13px">이거 한 분들이 다음에 많이 누른 것</div>'+TEST.next.map((n,k)=>'<button class="nx" data-k="'+k+'">'+n.t+'<span>'+n.s+'</span></button>').join("")+'<button class="sub" id="again" style="margin-top:14px">다시 하기</button>';
   $("chat").appendChild(res);$("dock").style.display="none";window.scrollTo(0,document.body.scrollHeight);
@@ -164,7 +164,7 @@ function saveImg(slow,misses,r){
     x.font="500 46px sans-serif";
     lines.forEach(l=>{const parts=[];let s="";for(const ch of l){if(x.measureText(s+ch).width>760){parts.push(s);s=ch}else s+=ch}parts.push(s);const h=parts.length*62+44;x.fillStyle="#1f1f22";rr(x,80,y,840,h,34);x.fill();x.fillStyle="#fff";parts.forEach((p,k)=>x.fillText(p,112,y+64+k*62));y+=h+26});
     x.fillStyle="#fee500";x.font="800 50px sans-serif";x.fillText("너는 몇 초 멈출 것 같아?",80,1760);
-    const a=document.createElement("a");a.download="3.5초.png";a.href=c.toDataURL("image/png");a.click();toast("저장됐어요");
+    const a=document.createElement("a");a.download="연애직감.png";a.href=c.toDataURL("image/png");a.click();toast("저장됐어요");
   }catch(e){toast("여기서는 저장이 막혀 있어요")}
 }
 function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}

@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>'안 고른' 답으로 보는 진짜 성격</title>
-<meta name="description" content="고른 것보다 버린 게 더 정확해요, 4초 안에 골라보세요">
+<meta name="description" content="고른 것보다 버린 게 더 정확해요">
 <meta property="og:title" content="'안 고른' 답으로 보는 진짜 성격">
-<meta property="og:description" content="고른 것보다 버린 게 더 정확해요, 4초 안에 골라보세요">
+<meta property="og:description" content="고른 것보다 버린 게 더 정확해요">
 <link rel="stylesheet" href="../assets/core.css">
 <style>
 :root{--a:#bf5af2;--aon:#fff}
@@ -22,7 +22,7 @@
 <section class="screen on" id="s-start">
   <p class="small" id="pre">안 고른 답 테스트</p>
   <h1 class="big" id="hook" style="margin-top:14px">고른 게 아니라<br>버린 걸로 볼게요</h1>
-  <p class="small" style="margin-top:16px">질문마다 4초예요<br>사람은 고른 것보다 안 고른 데서 더 티가 나요</p>
+  <p class="small" style="margin-top:16px">사람은 고른 것보다<br>안 고른 데서 더 티가 나요</p>
   <div style="margin-top:auto"><button class="go" id="go">시작</button></div>
 </section>
 <section class="screen" id="s-quiz">
@@ -58,7 +58,7 @@ const R={
  D:["말로 다 풀어야 하는 사람",["서운한 걸 말 안 하면 병나요","대화로 안 풀리는 게 제일 답답해요","근데 가끔은 말보다 그냥 옆에 있는 게 나을 때도 있어요"]]
 };
 const fk=PICK.param("r");
-quickTest({id:"unpicked",limit:4000,shuffle:true,
+quickTest({id:"unpicked",limit:0,shuffle:true,
  friend:()=>fk&&R[fk]?["친구는 '"+R[fk][0]+"' 나왔대요","나는 뭘 버리는지 볼까요?"]:null,
  questions:[
   {q:"금요일 밤",o:[["집에서 혼자 넷플",["S","A"]],["갑자기 잡힌 술약속",["V","T"]]]},

@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>우리 단톡방에서 나는 뭐 담당일까?</title>
-<meta name="description" content="단톡방에 던지면 다들 해봐요, 8문제에 4초씩">
+<meta name="description" content="단톡방에 던지면 다들 해봐요, 8문제면 끝나요">
 <meta property="og:title" content="우리 단톡방에서 나는 뭐 담당일까?">
-<meta property="og:description" content="단톡방에 던지면 다들 해봐요, 8문제에 4초씩">
+<meta property="og:description" content="단톡방에 던지면 다들 해봐요, 8문제면 끝나요">
 <link rel="stylesheet" href="../assets/core.css">
 <style>
 :root{--a:#ffd60a;--aon:#000}
@@ -22,7 +22,7 @@
 <section class="screen on" id="s-start">
   <p class="small" id="pre">단톡방 역할 테스트</p>
   <h1 class="big" id="hook" style="margin-top:14px">우리 단톡방에서<br>나는 뭐 담당일까요?</h1>
-  <p class="small" style="margin-top:16px">8문제, 질문마다 4초예요<br>끝나면 단톡방에 던져보세요</p>
+  <p class="small" style="margin-top:16px">8문제면 끝나요<br>끝나면 단톡방에 던져보세요</p>
   <div style="margin-top:auto"><button class="go" id="go">시작</button></div>
 </section>
 <section class="screen" id="s-quiz">
@@ -58,7 +58,7 @@ const R={
  cancel:["약속 파토 담당",["'나 좀 늦을 듯'이 시그니처예요","출발했다는 말은 아직 집이라는 뜻이에요","그래도 다들 기다려줘요"]]
 };
 const fk=PICK.param("r");
-quickTest({id:"groupchat",limit:4000,shuffle:true,
+quickTest({id:"groupchat",limit:0,shuffle:true,
  friend:()=>fk&&R[fk]?["친구는 '"+R[fk][0]+"'래요","나는 단톡방에서 뭘까요?"]:null,
  questions:[
   {q:"단톡방에 메시지 300개 쌓여 있음",o:[["안 읽음 표시만 지움","ghost"],["처음부터 다 읽음","notice"],["마지막 거에만 ㅋㅋ","react"]]},

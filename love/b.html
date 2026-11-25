@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>3.5초 안에 골라</title>
-<meta name="description" content="고민하면 다 티가 나요, 몇 초 멈췄는지까지 기록돼요">
-<meta property="og:title" content="3.5초 안에 골라">
-<meta property="og:description" content="고민하면 다 티가 나요">
+<title>연애 직감 테스트</title>
+<meta name="description" content="생각나는 대로 골라주세요, 몇 초 고민했는지까지 보여드려요">
+<meta property="og:title" content="연애 직감 테스트">
+<meta property="og:description" content="몇 초 고민했는지까지 보여드려요">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:#000;color:#fff}
@@ -65,8 +65,8 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
 <section class="screen on" id="s-start">
   <div id="stage"></div>
   <p class="small" id="pre">연애 직감 테스트</p>
-  <h1 class="big" id="hook" style="margin-top:14px">3.5초 안에 골라주세요<br>고민하면 다 티가 나요</h1>
-  <p class="small" id="sub" style="margin-top:16px">몇 초 멈췄는지 다 기록돼요<br>시간이 지나면 못 고른 걸로 처리돼요</p>
+  <h1 class="big" id="hook" style="margin-top:14px">생각나는 대로 골라주세요<br>고민한 시간은 다 티가 나요</h1>
+  <p class="small" id="sub" style="margin-top:16px">시간 제한은 없어요<br>대신 몇 초 멈췄는지는 다 기록돼요</p>
   <button class="go" id="go">시작</button>
 </section>
 
@@ -112,8 +112,8 @@ track("view");
 /* ========= 테스트 데이터 (새 테스트 = 이 부분만 교체) ========= */
 const TEST={
   id:"love-gut",
-  limit:3500,
-  share:(t)=>"나 '"+t+"' 나옴 ㅋㅋ 너는 3.5초 안에 고를 수 있냐",
+  limit:0,
+  share:(t)=>"나 '"+t+"' 나옴 ㅋㅋ 너는 뭐 나오는지 해봐",
   fromFriend:(t)=>["친구는 '"+t+"' 나왔대요","해봐야 서로 맞는지 나와요"],
   questions:[
     {q:"썸 타는 사람한테 카톡 옴",ax:"a",o:[["바로 답장","A"],["좀 있다가","W"]]},
@@ -138,7 +138,7 @@ const TEST={
   next:[
     {t:"그 사람 카톡을 넣으면 나한테 관심 있는지 보여요",s:"답장 속도랑 ㅋ 개수로 봐요",u:"../kakao/?from=love"},
     {t:"'안 고른' 답으로 보는 진짜 성격",s:"고른 것보다 이게 더 잘 맞아요",u:"../unpicked/?from=love"},
-    {t:"썸남 카톡 읽씹, 몇 초 버틸 수 있어요?",s:"답장 누르면 끝나는 게임",u:"../ignore/?from=love"},{t:"2026 연애 정산서",s:"12월 한정",u:"../receipt/?from=love"}
+    {t:"썸 7일: 사귈 수 있을까",s:"카톡으로 7일, 엔딩 8개 모으는 게임",u:"../some7/?from=love"},{t:"2026 연애 정산서",s:"12월 한정",u:"../receipt/?from=love"}
   ]
 };
 
@@ -151,14 +151,14 @@ function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.re
 function toast(m){$("toast").textContent=m;$("toast").classList.add("on");setTimeout(()=>$("toast").classList.remove("on"),1800)}
 function buzz(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
 
-function start(){track("start");i=0;ans=[];show("s-quiz");$("line").style.display="block";ask()}
+function start(){track("start");i=0;ans=[];show("s-quiz");ask()}
 function ask(){
   lock=false;track("q"+(i+1));const it=TEST.questions[i];
   $("count").textContent=(i+1)+"/"+TEST.questions.length;
   $("q").textContent=it.q;
   $("choices").innerHTML="";
   it.o.forEach(([tx,v])=>{const b=document.createElement("button");b.className="ch";b.textContent=tx;b.onclick=()=>pick(v,b);$("choices").appendChild(b)});
-  t0=performance.now();$("line").classList.remove("hurry");tick();
+  t0=performance.now();
 }
 function tick(){
   const el=performance.now()-t0;
@@ -200,7 +200,7 @@ function render(key,slow,misses){
   $("match").innerHTML="잘 맞는 사람 <b>"+TEST.results[r.g].n+"</b><br>만나면 피곤한 사람 <b>"+TEST.results[r.b].n+"</b>";
   $("nexts").innerHTML=TEST.next.map((n,k)=>'<button class="nx" data-k="'+k+'">'+n.t+'<span>'+n.s+'</span></button>').join("");
   document.querySelectorAll(".nx").forEach(b=>b.onclick=()=>{track("next");const n=TEST.next[b.dataset.k];if(n.u)location.href=n.u;else toast("아직 준비 중이에요")});
-  document.title="나는 '"+r.n+"' | 3.5초 안에 골라";
+  document.title="나는 '"+r.n+"' | 연애 직감 테스트";
   show("s-result");
   [...$("s-result").children].forEach((el,k)=>setTimeout(()=>el.classList.add("show"),k*260));
 }
@@ -218,13 +218,13 @@ $("save").onclick=()=>{track("save");
   try{
     const W=1080,H=1920,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
     x.fillStyle="#000";x.fillRect(0,0,W,H);x.fillStyle="#fff";x.textAlign="left";
-    x.font="600 40px sans-serif";x.fillStyle="#777";x.fillText("3.5초 안에 골라",90,260);
+    x.font="600 40px sans-serif";x.fillStyle="#777";x.fillText("연애 직감 테스트",90,260);
     x.fillStyle="#fff";x.font="800 72px sans-serif";
     let y=wrap(x,$("hit").textContent,90,420,900,100);
     x.font="600 40px sans-serif";x.fillStyle="#777";x.fillText("그래서 나는",90,y+160);
     x.fillStyle="#fff";x.font="800 64px sans-serif";wrap(x,$("tname").textContent,90,y+250,900,84);
     x.font="700 40px sans-serif";x.fillStyle="#777";x.fillText("너는 몇 초 멈출 것 같아?",90,1760);
-    const a=document.createElement("a");a.download="3.5초.png";a.href=c.toDataURL("image/png");a.click();toast("저장됐어요");
+    const a=document.createElement("a");a.download="연애직감.png";a.href=c.toDataURL("image/png");a.click();toast("저장됐어요");
   }catch(e){toast("여기서는 저장이 막혀 있어요")}
 };
 function wrap(x,t,lx,y,max,lh){let line="";for(const w of t.split("")){const s=line+w;if(x.measureText(s).width>max){x.fillText(line,lx,y);line=w;y+=lh}else line=s}x.fillText(line,lx,y);return y}
