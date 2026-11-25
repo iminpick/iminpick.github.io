@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>퇴사 지수 테스트</title>
+<meta name="description" content="일요일 저녁 기분부터 검색 기록까지, 10문제로 재보는 퇴사 지수">
+<meta property="og:title" content="퇴사 지수 테스트">
+<meta property="og:description" content="일요일 저녁 기분부터 검색 기록까지, 10문제로 재보는 퇴사 지수">
+<link rel="stylesheet" href="../assets/core.css">
+<style>
+:root{--a:#ff9f0a;--aon:#000}
+.q{margin:36px 0 6px}
+#ctx{font-size:14px;color:#666;margin-bottom:auto;min-height:20px}
+.tname{font-size:24px;font-weight:800;margin-top:30px}
+.meter{height:14px;border-radius:8px;background:#222;margin-top:18px;overflow:hidden}.meter i{display:block;height:100%;background:var(--a);width:0;transition:width 1.2s cubic-bezier(.2,.9,.3,1)}
+</style>
+</head>
+<body class="">
+<div class="tline" id="tl" style="display:none"></div>
+<div class="app">
+<section class="screen on" id="s-start">
+  <p class="small" id="pre">직장인 테스트</p>
+  <h1 class="big" id="hook" style="margin-top:14px">지금 내 퇴사 지수는<br>몇 %일까요?</h1>
+  <p class="small" style="margin-top:16px">회사, 알바 다 돼요<br>10문제면 끝나요</p>
+  <div style="margin-top:auto"><button class="go" id="go">시작</button></div>
+</section>
+<section class="screen" id="s-quiz">
+  <span class="count" id="count"></span>
+  <h2 class="big q" id="q"></h2>
+  <p id="ctx"></p>
+  <div class="choices" id="choices"></div>
+</section>
+<section class="screen" id="s-wait"><div class="dots"><i></i><i></i><i></i></div></section>
+<section class="screen reveal" id="s-result">
+  <p class="small">결과</p>
+  <p class="hit" id="hit"></p>
+  <div id="extra"></div>
+  <p class="tname" id="tname"></p>
+  <div class="list" id="list"></div>
+  <div class="ad"></div>
+  <div><button class="go" id="share">동기한테 보내기</button><div class="row"><button class="sub" id="save">이미지 저장</button><button class="sub" id="copy">링크 복사</button></div></div>
+  <div class="next" id="next"></div>
+  <button class="again" id="again">다시 하기</button>
+  <p class="foot">재미로 보는 테스트예요<br>답은 저장하지 않아요</p>
+</section>
+</div>
+<script src="../assets/core.js"></script>
+<script src="../assets/quick.js"></script>
+<script>
+
+const fs=PICK.param("s");
+quickTest({id:"quit",limit:0,
+ friend:()=>fs?["동기는 퇴사 지수 "+fs+"%래요","나는 몇 %일까요?"]:null,
+ questions:[
+  {q:"일요일 저녁 6시",o:[["평온함",0],["살짝 우울",1],["벌써 숨이 막힘",2]]},
+  {q:"출근길",o:[["음악 들으며 그럭저럭",0],["멍하니 감",1],["반대 방향으로 가고 싶음",2]]},
+  {q:"회사 메신저 알림 소리",o:[["별 느낌 없음",0],["살짝 긴장",1],["심장이 내려앉음",2]]},
+  {q:"월급날",o:[["뿌듯함",0],["스쳐 지나감",1],["이걸로 버티는 중",2]]},
+  {q:"친구 이직 소식",o:[["축하해줌",0],["좀 부러움",1],["어느 회사인지 바로 물어봄",2]]},
+  {q:"팀장님이 \"잠깐 얘기 좀\"",o:[["무슨 일인가 싶음",0],["불안함",1],["사직서부터 떠오름",2]]},
+  {q:"점심시간이 끝나갈 때",o:[["다시 일할 준비",0],["5분만 더",1],["오후가 너무 길게 느껴짐",2]]},
+  {q:"지금 하는 일",o:[["배우는 게 있음",0],["그냥 익숙함",1],["뭘 하는지 모르겠음",2]]},
+  {q:"요즘 검색 기록에",o:[["맛집",0],["연차 계산",1],["퇴직금 계산기",2]]},
+  {q:"1년 뒤의 나",o:[["여기서 더 성장",0],["모르겠음",1],["여기 없을 듯",2]]}
+ ],
+ compute(a){
+  const s=a.reduce((t,x)=>t+(x.data||0),0),p=Math.round(s/20*100);
+  let name,lines;
+  if(p<=20){name="아직은 괜찮아요";lines=["회사가 마음에 들거나, 적어도 견딜 만해요","월요일이 그렇게 무섭지 않아요","지금 그 마음 오래 가면 좋겠어요"]}
+  else if(p<=45){name="가끔 사직서를 상상해요";lines=["평소엔 괜찮은데 특정 사람, 특정 요일이 문제예요","퇴근하면 금방 잊어버려요","대부분의 직장인이 여기 있어요"]}
+  else if(p<=70){name="이직 사이트를 몰래 봐요";lines=["출근 전부터 퇴근을 기다려요","친구 이직 소식에 마음이 흔들려요","무엇 때문에 힘든지 한번 적어보면 좋아요"]}
+  else{name="마음은 이미 퇴사했어요";lines=["몸만 출근하고 있어요","일요일 저녁이 제일 힘들어요","너무 오래 버티지는 말아요"]}
+  setTimeout(()=>{const m=document.querySelector(".meter i");if(m)m.style.width=p+"%"},300);
+  return {hit:"퇴사 지수 <u>"+p+"%</u>",name,lines,html:'<div class="meter"><i></i></div>',q:"?s="+p,
+   share:"내 퇴사 지수 "+p+"% 나옴 ㅋㅋ 너는 몇 %야?",
+   img:[{t:"퇴사 지수 테스트",size:46,weight:700,color:"#888"},{t:p+"%",size:220,gap:40,color:"#ff9f0a"},{t:name,size:66,gap:20},{t:"너는 몇 %야?",size:48,weight:700,color:"#ccc",gap:80}]};
+ }});
+
+</script>
+</body>
+</html>

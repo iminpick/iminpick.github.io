@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>속담 10문제, 몇 개 아세요?</title>
+<meta name="description" content="빈칸에 들어갈 말을 골라보세요, 가족 단톡방에 보내기 좋아요">
+<meta property="og:title" content="속담 10문제, 몇 개 아세요?">
+<meta property="og:description" content="빈칸에 들어갈 말을 골라보세요, 가족 단톡방에 보내기 좋아요">
+<link rel="stylesheet" href="../assets/core.css">
+<style>
+:root{--a:#ffffff;--aon:#000}
+.q{margin:36px 0 6px}
+#ctx{font-size:14px;color:#666;margin-bottom:auto;min-height:20px}
+.tname{font-size:24px;font-weight:800;margin-top:30px}
+.senior .big{font-size:34px}.senior .ch{font-size:24px;padding:24px 20px}.senior .small{font-size:17px}.senior .list p{font-size:19px}
+</style>
+</head>
+<body class="senior">
+<div class="tline" id="tl" style="display:none"></div>
+<div class="app">
+<section class="screen on" id="s-start">
+  <p class="small" id="pre">속담 퀴즈</p>
+  <h1 class="big" id="hook" style="margin-top:14px">속담 빈칸 채우기<br>10문제</h1>
+  <p class="small" style="margin-top:16px">시간 제한은 없어요<br>천천히 골라도 돼요</p>
+  <div style="margin-top:auto"><button class="go" id="go">시작</button></div>
+</section>
+<section class="screen" id="s-quiz">
+  <span class="count" id="count"></span>
+  <h2 class="big q" id="q"></h2>
+  <p id="ctx"></p>
+  <div class="choices" id="choices"></div>
+</section>
+<section class="screen" id="s-wait"><div class="dots"><i></i><i></i><i></i></div></section>
+<section class="screen reveal" id="s-result">
+  <p class="small">결과</p>
+  <p class="hit" id="hit"></p>
+  <div id="extra"></div>
+  <p class="tname" id="tname"></p>
+  <div class="list" id="list"></div>
+  <div class="ad"></div>
+  <div><button class="go" id="share">가족 단톡방에 보내기</button><div class="row"><button class="sub" id="save">이미지 저장</button><button class="sub" id="copy">링크 복사</button></div></div>
+  <div class="next" id="next"></div>
+  <button class="again" id="again">다시 하기</button>
+  <p class="foot">재미로 푸는 퀴즈예요<br>답은 저장하지 않아요</p>
+</section>
+</div>
+<script src="../assets/core.js"></script>
+<script src="../assets/quick.js"></script>
+<script>
+
+const Y={ok:true},N={ok:false},fs=PICK.param("s");
+quickTest({id:"proverb",limit:0,shuffle:true,feedback:true,
+ friend:()=>fs?["보낸 사람은 "+fs+"개 맞혔대요","몇 개 맞힐 수 있을까요?"]:null,
+ questions:[
+  {q:"가는 말이 고와야 ___",o:[["오는 말이 곱다",Y],["듣는 말이 곱다",N]]},
+  {q:"낮말은 새가 듣고 ___",o:[["밤말은 쥐가 듣는다",Y],["밤말은 개가 듣는다",N]]},
+  {q:"소 잃고 ___ 고친다",o:[["외양간",Y],["울타리",N]]},
+  {q:"원숭이도 ___에서 떨어질 때가 있다",o:[["나무",Y],["지붕",N]]},
+  {q:"고래 싸움에 ___ 등 터진다",o:[["새우",Y],["멸치",N]]},
+  {q:"백지장도 ___ 낫다",o:[["맞들면",Y],["나누면",N]]},
+  {q:"티끌 모아 ___",o:[["태산",Y],["부자",N]]},
+  {q:"천 리 길도 ___부터",o:[["한 걸음",Y],["첫 걸음",N]]},
+  {q:"등잔 밑이 ___",o:[["어둡다",Y],["밝다",N]]},
+  {q:"세 살 버릇 ___ 간다",o:[["여든까지",Y],["백 살까지",N]]}
+ ],
+ compute(a){
+  const right=a.filter(x=>x.data&&x.data.ok).length,wrong=a.filter(x=>!(x.data&&x.data.ok));
+  let name,lines;
+  if(right===10){name="속담 박사";lines=["10개 다 맞히기 쉽지 않아요","가족 단톡방 퀴즈 출제는 이제 당신 담당이에요","다른 퀴즈도 한번 풀어보세요"]}
+  else if(right>=8){name="속담 고수";lines=["헷갈리는 것도 대부분 맞혔어요","한두 개는 누구나 헷갈려요","틀린 건 아래에 정답이 있어요"]}
+  else if(right>=5){name="속담 좀 아는 사람";lines=["평균 이상이에요","비슷한 말이 섞이면 헷갈리죠","다시 풀면 금방 다 맞혀요"]}
+  else{name="오늘부터 속담 공부";lines=["괜찮아요, 요즘은 잘 안 쓰는 말이 많아요","틀린 건 아래에 정답이 있어요","다시 해보면 점수가 바로 올라가요"]}
+  const wl=wrong.map(x=>x.q.replace("___","<b>"+x.otherText[x.others.findIndex(o=>o&&o.ok)]+"</b>")).slice(0,5);
+  return {hit:"10개 중 <u>"+right+"개</u> 맞혔어요",name,lines,
+   html:wl.length?'<div class="list"><p style="color:#888;border:0">정답</p>'+wl.map(x=>"<p>"+x+"</p>").join("")+"</div>":"",
+   q:"?s="+right,share:"속담 10문제 중에 "+right+"개 맞혔어요 ㅎㅎ 몇 개 맞히시나 해보세요",
+   img:[{t:"속담 10문제",size:46,weight:700,color:"#888"},{t:right+"개 맞힘",size:150,gap:40},{t:name,size:70,gap:20},{t:"몇 개 맞힐 수 있을까요?",size:48,weight:700,color:"#ccc",gap:80}]};
+ }});
+
+</script>
+</body>
+</html>

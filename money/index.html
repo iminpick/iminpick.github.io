@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>돈 쓰는 스타일 테스트</title>
+<meta name="description" content="월급날, 세일 문자, 택배 오는 날에 다 보여요">
+<meta property="og:title" content="돈 쓰는 스타일 테스트">
+<meta property="og:description" content="월급날, 세일 문자, 택배 오는 날에 다 보여요">
+<link rel="stylesheet" href="../assets/core.css">
+<style>
+:root{--a:#30d158;--aon:#000}
+.q{margin:36px 0 6px}
+#ctx{font-size:14px;color:#666;margin-bottom:auto;min-height:20px}
+.tname{font-size:24px;font-weight:800;margin-top:30px}
+
+</style>
+</head>
+<body class="">
+<div class="tline" id="tl" style="display:none"></div>
+<div class="app">
+<section class="screen on" id="s-start">
+  <p class="small" id="pre">소비 성향 테스트</p>
+  <h1 class="big" id="hook" style="margin-top:14px">나는 돈을<br>어떻게 쓰는 사람일까요?</h1>
+  <p class="small" style="margin-top:16px">8문제면 끝나요<br>통장 내역이 떠오를 수 있어요</p>
+  <div style="margin-top:auto"><button class="go" id="go">시작</button></div>
+</section>
+<section class="screen" id="s-quiz">
+  <span class="count" id="count"></span>
+  <h2 class="big q" id="q"></h2>
+  <p id="ctx"></p>
+  <div class="choices" id="choices"></div>
+</section>
+<section class="screen" id="s-wait"><div class="dots"><i></i><i></i><i></i></div></section>
+<section class="screen reveal" id="s-result">
+  <p class="small">결과</p>
+  <p class="hit" id="hit"></p>
+  <div id="extra"></div>
+  <p class="tname" id="tname"></p>
+  <div class="list" id="list"></div>
+  <div class="ad"></div>
+  <div><button class="go" id="share">친구한테 보내기</button><div class="row"><button class="sub" id="save">이미지 저장</button><button class="sub" id="copy">링크 복사</button></div></div>
+  <div class="next" id="next"></div>
+  <button class="again" id="again">다시 하기</button>
+  <p class="foot">재미로 보는 테스트예요<br>답은 저장하지 않아요</p>
+</section>
+</div>
+<script src="../assets/core.js"></script>
+<script src="../assets/quick.js"></script>
+<script>
+
+const R={"mood": ["기분 따라 쓰는 사람", ["스트레스 받은 날 장바구니가 차요", "택배가 오면 뭘 시켰는지 기억이 안 나요", "기분 좋은 날 쓰는 돈은 아깝지 않아요"]], "plan": ["가계부 쓰는 사람", ["고정 지출을 외우고 있어요", "할인 쿠폰 기한을 놓친 적이 없어요", "가끔은 그냥 써도 괜찮아요"]], "exp": ["경험에 쓰는 사람", ["물건보다 여행, 공연, 맛집이에요", "통장은 비어도 사진첩은 꽉 차 있어요", "추억 얘기할 때 제일 신나요"]], "saver": ["모으는 게 재밌는 사람", ["통장 잔고 보는 게 취미예요", "커피값도 한 번 더 생각해요", "목표 금액을 채울 때 제일 행복해요"]], "gift": ["남한테 더 쓰는 사람", ["친구 생일 선물은 제일 먼저 챙겨요", "내 건 아끼면서 남의 건 좋은 걸로 사요", "가끔은 나한테도 선물해주세요"]], "regret": ["사고 나서 후회하는 사람", ["결제하고 바로 후회해요", "반품 신청 화면이 익숙해요", "장바구니에 넣고 하루 재우는 습관이 필요해요"]]};
+const fk=PICK.param("r");
+quickTest({id:"money",limit:0,shuffle:true,
+ friend:()=>fk&&R[fk]?["친구는 '{n}'래요".replace("{n}",R[fk][0]),"나는 돈을 어떻게 쓸까요?"]:null,
+ questions:[{"q": "월급 들어온 날", "o": [["치킨부터 시킴", "mood"], ["적금 먼저 이체", "saver"], ["가계부 정리", "plan"]]}, {"q": "세일 문자가 왔다", "o": [["일단 들어가 봄", "regret"], ["바로 지움", "saver"], ["필요한 것만 체크", "plan"]]}, {"q": "보너스 50만 원이 생기면", "o": [["여행 예약", "exp"], ["통장에 그대로", "saver"], ["가족 선물", "gift"]]}, {"q": "친구 생일", "o": [["선물 고르는 데 일주일", "gift"], ["기프티콘 바로 전송", "mood"], ["만나서 밥 사줌", "exp"]]}, {"q": "택배가 도착했다", "o": [["뭘 시켰더라", "regret"], ["기다리던 거 왔다", "plan"], ["가족 거 대신 산 것", "gift"]]}, {"q": "스트레스 받은 날", "o": [["쇼핑앱 켬", "mood"], ["맛있는 거 먹으러 감", "exp"], ["돈 안 쓰고 잠", "saver"]]}, {"q": "비싼 물건 살 때", "o": [["리뷰 100개 읽음", "plan"], ["꽂히면 바로 삼", "regret"], ["한 달 고민하다 안 삼", "saver"]]}, {"q": "돈 쓰고 제일 행복했던 순간", "o": [["여행 갔을 때", "exp"], ["선물 받은 사람이 좋아할 때", "gift"], ["갖고 싶던 걸 샀을 때", "mood"]]}],
+ compute(a){
+  const c={};a.forEach(x=>{if(x.data)c[x.data]=(c[x.data]||0)+1});
+  const k=Object.keys(c).sort((p,q)=>c[q]-c[p]||Math.random()-.5)[0],r=R[k];
+  return {hit:"돈 쓰는 스타일"+"<br><u>"+r[0]+"</u>",name:"",lines:r[1],q:"?r="+k,
+   share:"나 돈 쓰는 스타일 '{n}'래 ㅋㅋ 너는?".replace("{n}",r[0]),
+   img:[{t:"나는 돈을 쓸 때",size:46,weight:700,color:"#888"},{t:r[0],size:100,gap:40},{t:r[1][0],size:48,weight:600,color:"#ccc",gap:60},{t:"너는 어떤 스타일이야?",size:46,weight:700,color:"#30d158",gap:80}]};
+ }});
+
+</script>
+</body>
+</html>

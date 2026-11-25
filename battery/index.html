@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>나는 어떻게 충전되는 사람일까</title>
+<meta name="description" content="주말, 휴가, 약속 취소된 날 보면 알 수 있어요">
+<meta property="og:title" content="나는 어떻게 충전되는 사람일까">
+<meta property="og:description" content="주말, 휴가, 약속 취소된 날 보면 알 수 있어요">
+<link rel="stylesheet" href="../assets/core.css">
+<style>
+:root{--a:#64d2ff;--aon:#000}
+.q{margin:36px 0 6px}
+#ctx{font-size:14px;color:#666;margin-bottom:auto;min-height:20px}
+.tname{font-size:24px;font-weight:800;margin-top:30px}
+
+</style>
+</head>
+<body class="">
+<div class="tline" id="tl" style="display:none"></div>
+<div class="app">
+<section class="screen on" id="s-start">
+  <p class="small" id="pre">충전 방식 테스트</p>
+  <h1 class="big" id="hook" style="margin-top:14px">나는 뭘로<br>충전되는 사람일까요?</h1>
+  <p class="small" style="margin-top:16px">8문제면 끝나요<br>쉬는 방법이 다 달라요</p>
+  <div style="margin-top:auto"><button class="go" id="go">시작</button></div>
+</section>
+<section class="screen" id="s-quiz">
+  <span class="count" id="count"></span>
+  <h2 class="big q" id="q"></h2>
+  <p id="ctx"></p>
+  <div class="choices" id="choices"></div>
+</section>
+<section class="screen" id="s-wait"><div class="dots"><i></i><i></i><i></i></div></section>
+<section class="screen reveal" id="s-result">
+  <p class="small">결과</p>
+  <p class="hit" id="hit"></p>
+  <div id="extra"></div>
+  <p class="tname" id="tname"></p>
+  <div class="list" id="list"></div>
+  <div class="ad"></div>
+  <div><button class="go" id="share">친구한테 보내기</button><div class="row"><button class="sub" id="save">이미지 저장</button><button class="sub" id="copy">링크 복사</button></div></div>
+  <div class="next" id="next"></div>
+  <button class="again" id="again">다시 하기</button>
+  <p class="foot">재미로 보는 테스트예요<br>답은 저장하지 않아요</p>
+</section>
+</div>
+<script src="../assets/core.js"></script>
+<script src="../assets/quick.js"></script>
+<script>
+
+const R={"home": ["집에서 충전형", ["약속 없는 주말이 제일 행복해요", "이불 밖은 위험하다는 말에 진심이에요", "혼자 있어도 심심할 틈이 없어요"]], "people": ["사람으로 충전형", ["사람 만나고 오면 오히려 힘이 나요", "약속이 취소되면 다른 약속을 잡아요", "혼자 있으면 금방 심심해져요"]], "move": ["움직여서 충전형", ["걷거나 운동해야 머리가 맑아져요", "주말에 가만히 있으면 더 피곤해요", "산책 코스를 몇 개씩 알고 있어요"]], "hobby": ["몰입으로 충전형", ["좋아하는 거 하나에 빠지면 시간이 사라져요", "게임이든 그림이든 깊게 파요", "방해받는 게 제일 싫어요"]], "sleep": ["잠으로 충전형", ["주말 오전은 원래 없는 시간이에요", "낮잠이 최고의 회복이에요", "알람 없는 아침이 소원이에요"]], "out": ["나가야 충전형", ["카페, 전시, 팝업은 일단 가봐요", "집에 있으면 오히려 답답해요", "혼자서도 잘 돌아다녀요"]]};
+const fk=PICK.param("r");
+quickTest({id:"battery",limit:0,shuffle:true,
+ friend:()=>fk&&R[fk]?["친구는 '{n}'래요".replace("{n}",R[fk][0]),"나는 뭘로 충전될까요?"]:null,
+ questions:[{"q": "금요일 밤 약속이 취소됐다", "o": [["오히려 좋아", "home"], ["다른 친구한테 연락", "people"], ["혼자라도 나감", "out"]]}, {"q": "토요일 아침", "o": [["알람 없이 늦잠", "sleep"], ["운동하러 감", "move"], ["하던 게임 이어서", "hobby"]]}, {"q": "제일 피곤할 때", "o": [["누워서 아무것도 안 함", "sleep"], ["친구랑 수다", "people"], ["산책", "move"]]}, {"q": "혼자 있는 시간", "o": [["너무 좋음", "home"], ["금방 심심함", "people"], ["하고 싶은 거 몰아서", "hobby"]]}, {"q": "휴가가 3일 생기면", "o": [["집에서 푹 쉼", "home"], ["즉흥 여행", "out"], ["밀린 취미 몰아서", "hobby"]]}, {"q": "카페에 가면", "o": [["창가에서 멍때림", "out"], ["친구랑 수다", "people"], ["노트북으로 뭐 함", "hobby"]]}, {"q": "스트레스 풀 때", "o": [["땀 흘리기", "move"], ["잠", "sleep"], ["새로운 데 가보기", "out"]]}, {"q": "일요일 저녁", "o": [["충전 완료", "home"], ["아직도 피곤", "sleep"], ["다음 주말 약속 벌써 잡음", "people"]]}],
+ compute(a){
+  const c={};a.forEach(x=>{if(x.data)c[x.data]=(c[x.data]||0)+1});
+  const k=Object.keys(c).sort((p,q)=>c[q]-c[p]||Math.random()-.5)[0],r=R[k];
+  return {hit:"나는"+"<br><u>"+r[0]+"</u>",name:"",lines:r[1],q:"?r="+k,
+   share:"나 '{n}'래 ㅋㅋ 너는 뭘로 충전해?".replace("{n}",r[0]),
+   img:[{t:"나는",size:46,weight:700,color:"#888"},{t:r[0],size:100,gap:40},{t:r[1][0],size:48,weight:600,color:"#ccc",gap:60},{t:"너는 뭘로 충전돼?",size:46,weight:700,color:"#64d2ff",gap:80}]};
+ }});
+
+</script>
+</body>
+</html>
